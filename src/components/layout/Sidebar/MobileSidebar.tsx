@@ -6,7 +6,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
-  Heading,
   HStack,
   IconButton,
   VStack,

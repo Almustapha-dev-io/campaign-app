@@ -48,14 +48,14 @@ function FeedbacksList() {
 
   useEffect(() => {
     if (userDetails && userDetails.ward) {
-      setWard(userDetails.ward.id.toString());
+      // setWard(userDetails.ward.id.toString());
     }
   }, [userDetails]);
 
   useEffect(() => {
-    if (isAdmin) {
-      getLgas();
-    }
+    // if (isAdmin) {
+    getLgas();
+    // }
   }, [getLgas, isAdmin]);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function FeedbacksList() {
         spacing="4"
         justify="flex-start"
       >
-        {isAdmin && (
+        {true && (
           <>
             <FormControl
               w={{ base: 'full', md: '300px' }}

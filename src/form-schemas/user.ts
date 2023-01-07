@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { OptionBase } from 'chakra-react-select';
 
 export type TAddUserFormValues = {
   email: string;
@@ -7,9 +6,10 @@ export type TAddUserFormValues = {
   lastName: string;
   phoneNumber: string;
   profilePictureUrl: string;
-  roleIds: (Record<'label' | 'value', string> & OptionBase) | null;
+  roleIds: string;
   wardId: number;
   lgaId: number;
+  pollingUnitId: number;
 };
 
 const addUserSchema = yup.object().shape({
@@ -18,16 +18,31 @@ const addUserSchema = yup.object().shape({
   lastName: yup.string().min(2).required().label('Last name'),
   phoneNumber: yup.string().min(4).required().label('Phone number'),
   profilePictureUrl: yup.string(),
-  wardId: yup.number().required().label('Ward ID'),
-  lgaId: yup.number().required().label("Local Gov't ID"),
-  roleIds: yup
-    .object()
-    .shape({
-      label: yup.string(),
-      value: yup.string(),
+  roleIds: yup.string().label('Role Ids').required(),
+  wardId: yup
+    .number()
+    .when('roleIds', {
+      is: '4',
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema,
     })
-    .label('Role Ids')
-    .required(),
+    .label('Ward ID'),
+  pollingUnitId: yup
+    .number()
+    .when('roleIds', {
+      is: '4',
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema,
+    })
+    .label('Polling Unit ID'),
+  lgaId: yup
+    .number()
+    .when('roleIds', {
+      is: '4',
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema,
+    })
+    .label("Local Gov't ID"),
 });
 
 export type TEditUserProfileFormValues = Pick<
