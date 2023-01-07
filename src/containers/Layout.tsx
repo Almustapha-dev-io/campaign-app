@@ -1,10 +1,10 @@
-import { Box } from '@chakra-ui/react';
-import Main from 'components/layout/Main';
-import Sidebar from 'components/layout/Sidebar';
-import LayoutContextProvider from 'contexts/layout';
-import useAuth from 'hooks/useAuth';
-import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Box } from "@chakra-ui/react";
+import Main from "components/layout/Main";
+import Sidebar from "components/layout/Sidebar";
+import LayoutContextProvider from "contexts/layout";
+import useAuth from "hooks/useAuth";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 function Layout() {
   const { isAuth } = useAuth();
@@ -12,7 +12,7 @@ function Layout() {
 
   useEffect(() => {
     if (!isAuth) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuth, navigate]);
 
