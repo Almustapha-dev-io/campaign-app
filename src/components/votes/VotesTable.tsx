@@ -9,10 +9,10 @@ import { TPagination } from 'types/paginaiton';
 import { TVote } from 'types/vote';
 
 type Props = {
-  wardId: string;
+  pollingUnitId: string;
 };
 
-function VotesTable({ wardId }: Props) {
+function VotesTable({ pollingUnitId }: Props) {
   const [getVotes, { isError, isFetching, currentData: data }] =
     useLazyGetVotesQuery();
 
@@ -20,16 +20,16 @@ function VotesTable({ wardId }: Props) {
 
   const fetchVotes = useCallback(
     (data: TPagination) => {
-      getVotes({ wardId: wardId, ...data });
+      getVotes({ pollingUnitId: pollingUnitId, ...data });
     },
-    [getVotes, wardId]
+    [getVotes, pollingUnitId]
   );
 
   const columns = useMemo<Column<TVote>[]>(
     () => [
       {
-        Header: 'Ward',
-        accessor: 'ward',
+        Header: 'Polling Unit',
+        accessor: 'pollingUnit',
         Cell: ({ value }) => <>{value.name}</>,
       },
       {

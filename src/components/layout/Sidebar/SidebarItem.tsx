@@ -60,7 +60,13 @@ function SidebarItem({ icon, label, sidebarOpen, url }: Props) {
           </HStack>
         </PopoverTrigger>
         {showPopover && (
-          <PopoverContent w="fit-content" fontSize="sm">
+          <PopoverContent
+            w="fit-content"
+            fontSize="sm"
+            bg="white"
+            zIndex="docked"
+            opacity="1"
+          >
             <PopoverArrow />
             <PopoverBody>{label}</PopoverBody>
           </PopoverContent>
@@ -114,7 +120,7 @@ export function LogoutSidebarItem({
         </Button>
       </PopoverTrigger>
       {showPopover && (
-        <PopoverContent w="fit-content" fontSize="sm">
+        <PopoverContent w="fit-content" fontSize="sm" zIndex="docked">
           <PopoverArrow />
           <PopoverBody>Logout</PopoverBody>
         </PopoverContent>

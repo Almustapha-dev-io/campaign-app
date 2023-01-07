@@ -1,10 +1,10 @@
-import { TWard } from './ward';
+import { TPollingUnit } from './polling-unit';
 
 export type TVote = {
   id: number;
   addedBy: string;
   dateAdded: string;
-  ward: TWard;
+  pollingUnit: TPollingUnit;
   numberOfVotes: number;
   party: 'APC' | 'PDP' | 'OTHERS';
   lastUpdatedBy: string;
@@ -13,7 +13,7 @@ export type TVote = {
 
 export type VoteDTO = {
   id?: number;
-  wardId: string;
+  pollingUnitId: string;
   numberOfVotes: number;
   party: 'APC' | 'PDP' | 'OTHERS';
 };

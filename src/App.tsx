@@ -3,6 +3,8 @@ import Dashboard from 'pages/Dashboard';
 import ElectionTypes from 'pages/ElectionTypes';
 import Feedback from 'pages/Feedback';
 import Login from 'pages/Login';
+import PollingUnitData from 'pages/PollingUnitData';
+import PollingUnitIssues from 'pages/PollingUnitIssues';
 import Profile from 'pages/Profile';
 import Roles from 'pages/Roles';
 import Users from 'pages/Users';
@@ -23,6 +25,8 @@ function App() {
         <Route path="voters" element={<Voters />} />
         <Route path="feedback" element={<Feedback />} />
         <Route path="votes" element={<Vote />} />
+        <Route path="/polling-unit-data" element={<PollingUnitData />} />
+        <Route path="/polling-unit-issues" element={<PollingUnitIssues />} />
         <Route path="election-types" element={<ElectionTypes />} />
         <Route path="" element={<Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />

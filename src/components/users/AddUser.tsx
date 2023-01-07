@@ -23,7 +23,6 @@ import { useGetRolesQuery } from 'store/reducers/roles-api-slices';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import addUserSchema, { TAddUserFormValues } from 'form-schemas/user';
-import ControlledSelect from 'components/ControlledSelect';
 import { WarningIcon } from '@chakra-ui/icons';
 import { useAddUserMutation } from 'store/reducers/users-api-slice';
 import { useContext, useEffect, useRef } from 'react';
@@ -34,6 +33,7 @@ import {
   useGetLGAsQuery,
   useLazyGetWardsQuery,
 } from 'store/reducers/states-api-slice';
+import { useLazyGetPollingUnitsQuery } from 'store/reducers/polling-units-api-slice';
 
 type Props = Omit<DrawerProps, 'children'> & {};
 
@@ -57,6 +57,15 @@ function AddUser({ isOpen, onClose }: Props) {
     },
   ] = useLazyGetWardsQuery();
   const [
+    getPollingUnits,
+    {
+      isFetching: isFetchingPUs,
+      data: pollingUnits,
+      isError: isPollingUnitError,
+    },
+  ] = useLazyGetPollingUnitsQuery();
+
+  const [
     addUser,
     { isError: isAddError, isLoading, isSuccess, error, reset: resetMutation },
   ] = useAddUserMutation();
@@ -64,7 +73,6 @@ function AddUser({ isOpen, onClose }: Props) {
   const {
     register,
     handleSubmit,
-    control,
     reset,
     setValue,
     getValues,
@@ -120,12 +128,9 @@ function AddUser({ isOpen, onClose }: Props) {
           validationData
         );
 
-        let role: any = null;
+        let role = '';
         if (selectedUser.roles.length) {
-          role = {
-            label: selectedUser.roles[0].name,
-            value: selectedUser.roles[0].id.toString(),
-          };
+          role = selectedUser.roles[0].id.toString();
         }
         setValue('roleIds', role, validationData);
       }
@@ -133,7 +138,9 @@ function AddUser({ isOpen, onClose }: Props) {
   }, [isOpen, setValue, selectedUser, reset]);
 
   useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
+    const subscription = watch((value, { name }) => {
+      console.log(value);
+
       if (name === 'lgaId') {
         if (!selectedUser) {
           resetField('wardId');
@@ -142,14 +149,23 @@ function AddUser({ isOpen, onClose }: Props) {
           getWards(value.lgaId.toString());
         }
       }
+
+      if (name === 'wardId') {
+        if (!selectedUser) {
+          resetField('pollingUnitId');
+        }
+        if (value.wardId) {
+          getPollingUnits(value.wardId);
+        }
+      }
     });
     return () => subscription.unsubscribe();
-  }, [getWards, resetField, selectedUser, watch]);
+  }, [getPollingUnits, getWards, resetField, selectedUser, watch]);
 
   const submitHandler: SubmitHandler<TAddUserFormValues> = (values) => {
     const roles: number[] = [];
     if (values.roleIds) {
-      roles.push(+values.roleIds.value);
+      roles.push(+values.roleIds);
     }
 
     if (!selectedUser) {
@@ -164,6 +180,7 @@ function AddUser({ isOpen, onClose }: Props) {
         roleIds: roles,
         password: 'user1234',
         wardId: values.wardId,
+        pollingUnitId: values.pollingUnitId,
       });
       return;
     }
@@ -198,10 +215,29 @@ function AddUser({ isOpen, onClose }: Props) {
           <FormErrorMessage>{errors.phoneNumber?.message}</FormErrorMessage>
         </FormControl>
 
+        <FormControl isInvalid={!!errors.roleIds}>
+          <FormLabel>Role</FormLabel>
+          <Select {...register('roleIds')}>
+            <option value="" selected hidden>
+              Select one
+            </option>
+            {!!data
+              ? data.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))
+              : null}
+          </Select>
+          <FormErrorMessage>{errors.roleIds?.message}</FormErrorMessage>
+        </FormControl>
+
         <FormControl isInvalid={!!errors.lgaId}>
           <FormLabel>Local Gov't</FormLabel>
           <Select {...register('lgaId')}>
-            <option value="">Select one</option>
+            <option value="" selected hidden>
+              Select one
+            </option>
             {!!lgas
               ? lgas.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -219,7 +255,9 @@ function AddUser({ isOpen, onClose }: Props) {
         >
           <FormLabel>Ward</FormLabel>
           <Select {...register('wardId')}>
-            <option value="">Select one</option>
+            <option value="" selected hidden>
+              Select one
+            </option>
             {!!wards
               ? wards.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -231,27 +269,25 @@ function AddUser({ isOpen, onClose }: Props) {
           <FormErrorMessage>{errors.wardId?.message}</FormErrorMessage>
         </FormControl>
 
-        <ControlledSelect<
-          TAddUserFormValues,
-          TAddUserFormValues['roleIds'],
-          false
+        <FormControl
+          isInvalid={!!errors.pollingUnitId}
+          isDisabled={!getValues('lgaId') || !getValues('wardId')}
         >
-          useBasicStyles
-          name="roleIds"
-          control={control}
-          label="Roles Id"
-          placeholder="Select role"
-          options={
-            data
-              ? data.map((o) => ({
-                  label: o.name,
-                  value: o.id.toString(),
-                }))
-              : []
-          }
-          selectedOptionStyle="check"
-          isLoading={isFetching}
-        />
+          <FormLabel>Polling Unit</FormLabel>
+          <Select {...register('pollingUnitId')}>
+            <option value="" selected hidden>
+              Select one
+            </option>
+            {!!pollingUnits
+              ? pollingUnits.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))
+              : null}
+          </Select>
+          <FormErrorMessage>{errors.pollingUnitId?.message}</FormErrorMessage>
+        </FormControl>
 
         {!!selectedUser === false && (
           <FormControl isReadOnly>
@@ -315,6 +351,23 @@ function AddUser({ isOpen, onClose }: Props) {
           </VStack>
 
           <Button onClick={() => getWards(getValues('lgaId').toString())}>
+            Retry
+          </Button>
+        </VStack>
+      </Center>
+    );
+  }
+
+  if (!isFetchingPUs && isPollingUnitError) {
+    content = (
+      <Center w="full" h="400px">
+        <VStack w="full" spacing="4">
+          <VStack w="full">
+            <WarningIcon fontSize="5xl" color="red.500" />
+            <Text color="red.500">Error getting Polling Units</Text>
+          </VStack>
+
+          <Button onClick={() => getPollingUnits(getValues('pollingUnitId'))}>
             Retry
           </Button>
         </VStack>

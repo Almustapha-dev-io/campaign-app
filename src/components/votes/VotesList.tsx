@@ -1,6 +1,7 @@
 import {
   FormControl,
   FormLabel,
+  Heading,
   Select,
   Stack,
   Tab,
@@ -8,9 +9,11 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  VStack,
 } from '@chakra-ui/react';
 import useAuth from 'hooks/useAuth';
 import { useEffect, useState } from 'react';
+import { useLazyGetPollingUnitsQuery } from 'store/reducers/polling-units-api-slice';
 import {
   useLazyGetLGAsQuery,
   useLazyGetWardsQuery,
@@ -22,6 +25,7 @@ import VotesTable from './VotesTable';
 function VotesList() {
   const [lga, setLga] = useState('');
   const [ward, setWard] = useState('');
+  const [pollingUnit, setPollingUnit] = useState('');
 
   const { userDetails } = useAuth();
 
@@ -44,13 +48,22 @@ function VotesList() {
     },
   ] = useLazyGetWardsQuery();
 
+  const [
+    getPollingUnits,
+    {
+      isFetching: isFetchingPUs,
+      data: pollingUnits,
+      isError: isPollingUnitError,
+    },
+  ] = useLazyGetPollingUnitsQuery();
+
   const isAdmin = userDetails
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
     : false;
 
   useEffect(() => {
-    if (userDetails && userDetails.ward) {
-      setWard(userDetails.ward.id.toString());
+    if (userDetails && userDetails.pollingUnit) {
+      setPollingUnit(userDetails.pollingUnit.id.toString());
     }
   }, [userDetails]);
 
@@ -66,6 +79,13 @@ function VotesList() {
       getWards(lga);
     }
   }, [getWards, lga]);
+
+  useEffect(() => {
+    if (ward) {
+      setPollingUnit('');
+      getPollingUnits(Number(ward));
+    }
+  }, [getPollingUnits, ward]);
 
   return (
     <>
@@ -122,36 +142,48 @@ function VotesList() {
             isDisabled={isFetchingLgs || isFetchingWards || !lga || !ward}
           >
             <FormLabel>Polling Unit</FormLabel>
-            <Select>
+            <Select
+              defaultValue=""
+              value={pollingUnit}
+              onChange={(e) => setPollingUnit(e.target.value)}
+            >
               <option>Select One</option>
+              {!!pollingUnits
+                ? pollingUnits.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))
+                : null}
             </Select>
           </FormControl>
         </Stack>
       )}
 
-      {!!ward && (
-        <Tabs w="full" isLazy>
-          <TabList>
-            <Tab>Registered</Tab>
-            <Tab>Accredited</Tab>
-            <Tab>Recorded</Tab>
-            <Tab>Invalid</Tab>
-          </TabList>
-          <TabPanels pt="10">
-            <TabPanel>
-              <VotesTable wardId={ward} />
-            </TabPanel>
-            <TabPanel>
-              <VotesTable wardId={ward} />
-            </TabPanel>
-            <TabPanel>
-              <VotesTable wardId={ward} />
-            </TabPanel>
-            <TabPanel>
-              <VotesTable wardId={ward} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+      {!!pollingUnit && (
+        <VotesTable pollingUnitId={pollingUnit} />
+        // <Tabs w="full" isLazy>
+        //   <TabList>
+        //     <Tab>Registered</Tab>
+        //     <Tab>Accredited</Tab>
+        //     <Tab>Recorded</Tab>
+        //     <Tab>Invalid</Tab>
+        //   </TabList>
+        //   <TabPanels pt="10">
+        //     <TabPanel>
+        //       <VotesTable pollingUnitId={pollingUnit} />
+        //     </TabPanel>
+        //     <TabPanel>
+        //       <VotesTable pollingUnitId={pollingUnit} />
+        //     </TabPanel>
+        //     <TabPanel>
+        //       <VotesTable pollingUnitId={pollingUnit} />
+        //     </TabPanel>
+        //     <TabPanel>
+        //       <VotesTable pollingUnitId={pollingUnit} />
+        //     </TabPanel>
+        //   </TabPanels>
+        // </Tabs>
       )}
     </>
   );

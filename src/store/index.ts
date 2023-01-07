@@ -6,6 +6,7 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './reducers/auth-slice';
 import { electionTypeApiSlice } from './reducers/election-type-api-slice';
 import { feedbackApiSlice } from './reducers/feedback-api-slice';
+import { pollingUnitApiSlice } from './reducers/polling-units-api-slice';
 import rolesApiSlie from './reducers/roles-api-slices';
 import { statesApiSlice } from './reducers/states-api-slice';
 import usersApiSlice from './reducers/users-api-slice';
@@ -28,6 +29,7 @@ export const configureStoreWithMiddleware = (initialState = {}) => {
     [feedbackApiSlice.reducerPath]: feedbackApiSlice.reducer,
     [votesApiSlice.reducerPath]: votesApiSlice.reducer,
     [statesApiSlice.reducerPath]: statesApiSlice.reducer,
+    [pollingUnitApiSlice.reducerPath]: pollingUnitApiSlice.reducer,
   });
 
   const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
@@ -42,6 +44,7 @@ export const configureStoreWithMiddleware = (initialState = {}) => {
         feedbackApiSlice.middleware,
         votesApiSlice.middleware,
         statesApiSlice.middleware,
+        pollingUnitApiSlice.middleware,
       ]),
     devTools: process.env.NODE_ENV !== 'production',
     preloadedState: initialState,

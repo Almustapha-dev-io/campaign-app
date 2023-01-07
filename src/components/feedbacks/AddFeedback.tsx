@@ -26,6 +26,11 @@ import {
   useAddFeedbackMutation,
   useUpdateFeedbackMutation,
 } from 'store/reducers/feedback-api-slice';
+import {
+  useGetLGAsQuery,
+  useLazyGetLGAsQuery,
+  useLazyGetWardsQuery,
+} from 'store/reducers/states-api-slice';
 import { FeedbackChannels } from 'types/feedback';
 import { Roles } from 'types/roles';
 import { TUser } from 'types/user';
@@ -42,6 +47,8 @@ function AddFeedback({ user }: Props) {
     handleSubmit,
     setValue,
     reset,
+    resetField,
+    watch,
     formState: { errors, isValid },
   } = useForm<TFeedbackForm>({
     resolver: yupResolver(feedbackSchema),
@@ -49,6 +56,23 @@ function AddFeedback({ user }: Props) {
   });
   const { selectedFeedback, setSelectedFeedback, isOpen, onClose } =
     useContext(FeedbackContext);
+
+  const {
+    isFetching: isFetchingLgs,
+    data: lgas,
+    isError: isLgaError,
+    error: lgaError,
+  } = useGetLGAsQuery();
+
+  const [
+    getWards,
+    {
+      isFetching: isFetchingWards,
+      data: wards,
+      isError: isWardError,
+      error: wardError,
+    },
+  ] = useLazyGetWardsQuery();
 
   const [
     addFeedback,
@@ -78,7 +102,6 @@ function AddFeedback({ user }: Props) {
     if (!selectedFeedback) {
       addFeedback({
         ...values,
-        wardId: user.ward ? user.ward.id.toString() : '',
       });
       return;
     }
@@ -98,7 +121,7 @@ function AddFeedback({ user }: Props) {
         shouldValidate: true,
       };
 
-      setValue('wardId', user.ward ? user.ward.name : '');
+      // setValue('wardId', user.ward ? user.ward.name : '');
       if (selectedFeedback) {
         setValue('wardId', selectedFeedback.ward.name);
         setValue('comment', selectedFeedback.comment);
@@ -136,6 +159,22 @@ function AddFeedback({ user }: Props) {
     }
   }, [isUpdateError, isUpdating, updateError]);
 
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      console.log(value);
+
+      if (name === 'lgaId') {
+        if (!selectedFeedback) {
+          resetField('wardId');
+        }
+        if (value.lgaId) {
+          getWards(value.lgaId.toString());
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [getWards, resetField, selectedFeedback, watch]);
+
   return (
     <Drawer
       closeOnEsc={false}
@@ -161,9 +200,36 @@ function AddFeedback({ user }: Props) {
         <DrawerBody>
           <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
             <VStack w="full" pt="8" spacing="8">
-              <FormControl isReadOnly isDisabled>
+              <FormControl>
+                <FormLabel>Local Gov't</FormLabel>
+                <Select {...register('lgaId')} defaultValue="">
+                  <option value="" selected hidden>
+                    Select One
+                  </option>
+                  {!!lgas
+                    ? lgas.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.name}
+                        </option>
+                      ))
+                    : null}
+                </Select>
+              </FormControl>
+
+              <FormControl>
                 <FormLabel>Ward</FormLabel>
-                <Input {...register('wardId')} />
+                <Select {...register('wardId')} defaultValue="">
+                  <option value="" selected hidden>
+                    Select One
+                  </option>
+                  {!!wards
+                    ? wards.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.name}
+                        </option>
+                      ))
+                    : null}
+                </Select>
               </FormControl>
 
               <FormControl isInvalid={!!errors.channel}>

@@ -72,7 +72,7 @@ function Voters() {
   }, [userDetails]);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (/* isAdmin */ true) {
       getLgas();
     }
   }, [getLgas, isAdmin]);
@@ -109,7 +109,7 @@ function Voters() {
           )}
         </Stack>
 
-        {isAdmin && (
+        {true && (
           <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
             <FormControl
               w={{ base: 'full', md: '300px' }}

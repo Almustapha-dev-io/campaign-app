@@ -84,7 +84,7 @@ function AddVote({ user }: Props) {
     if (!selectedVote) {
       addVote({
         ...values,
-        wardId: user.ward ? user.ward.id.toString() : '',
+        pollingUnitId: user.pollingUnit ? user.pollingUnit.id.toString() : '',
       });
       return;
     }
@@ -92,7 +92,7 @@ function AddVote({ user }: Props) {
     updateVote({
       id: selectedVote.id,
       ...values,
-      wardId: user.ward ? user.ward.id.toString() : '',
+      pollingUnitId: user.pollingUnit ? user.pollingUnit.id.toString() : '',
     });
   };
 
@@ -109,9 +109,9 @@ function AddVote({ user }: Props) {
         shouldValidate: true,
       };
 
-      setValue('wardId', user.ward ? user.ward.name : '');
+      setValue('pollingUnitId', user.pollingUnit ? user.pollingUnit.name : '');
       if (selectedVote) {
-        setValue('wardId', selectedVote.ward.name);
+        setValue('pollingUnitId', selectedVote.pollingUnit.name);
         setValue('numberOfVotes', selectedVote.numberOfVotes);
         setValue('party', selectedVote.party);
       }
@@ -176,20 +176,20 @@ function AddVote({ user }: Props) {
             <VStack w="full" pt="4" spacing="8">
               <FormControl isReadOnly>
                 <FormLabel>LG</FormLabel>
-                <Input value={user.ward?.localGovernment?.name} />
+                <Input value={user.pollingUnit?.ward?.localGovernment?.name} />
               </FormControl>
 
               <FormControl isReadOnly>
                 <FormLabel>Ward</FormLabel>
-                <Input {...register('wardId')} />
+                <Input value={user.pollingUnit?.ward?.name} />
               </FormControl>
 
               <FormControl isReadOnly>
                 <FormLabel>Polling Unit</FormLabel>
-                <Input {...register('wardId')} />
+                <Input {...register('pollingUnitId')} />
               </FormControl>
 
-              <FormControl>
+              {/* <FormControl>
                 <FormLabel>Vote Type</FormLabel>
                 <Select>
                   <option selected hidden>
@@ -200,7 +200,7 @@ function AddVote({ user }: Props) {
                   <option value="recorded">Recorded Votes</option>
                   <option value="invalid">Invalid Votes</option>
                 </Select>
-              </FormControl>
+              </FormControl> */}
 
               <FormControl isInvalid={!!errors.party}>
                 <FormLabel>Party</FormLabel>

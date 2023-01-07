@@ -1,9 +1,10 @@
 import { TSidebarItem } from 'types/sidebar';
-import { FiUsers, FiSettings, FiUser, FiSliders, FiGrid } from 'react-icons/fi';
+import { FiUsers, FiUser, FiSliders, FiGrid } from 'react-icons/fi';
 import { BsBoxSeam } from 'react-icons/bs';
 import { FaRegAddressCard } from 'react-icons/fa';
-import { MdOutlineFeedback } from 'react-icons/md';
+import { MdOutlineFeedback, MdOutlinePermMedia } from 'react-icons/md';
 import { RiAccountPinBoxLine } from 'react-icons/ri';
+import { BiMessageSquareDetail } from 'react-icons/bi';
 import { Roles } from 'types/roles';
 
 export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
@@ -57,6 +58,20 @@ export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
     label: 'Votes',
     sidebarOpen,
     url: '/votes',
+    roles: [Roles.PartyAgent, Roles.SuperAdmin],
+  },
+  {
+    icon: BiMessageSquareDetail,
+    label: 'Polling Unit Data',
+    sidebarOpen,
+    url: '/polling-unit-data',
+    roles: [Roles.PartyAgent, Roles.SuperAdmin],
+  },
+  {
+    icon: MdOutlinePermMedia,
+    label: 'Polling Unit Issues',
+    sidebarOpen,
+    url: '/polling-unit-issues',
     roles: [Roles.PartyAgent, Roles.SuperAdmin],
   },
   {

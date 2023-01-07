@@ -1,3 +1,4 @@
+import { TPollingUnit } from './polling-unit';
 import { TRole } from './roles';
 import { TWard } from './ward';
 
@@ -17,6 +18,7 @@ export type TUser = {
   accountNonExpired: boolean;
   credentialsNonExpired: boolean;
   ward?: TWard;
+  pollingUnit?: TPollingUnit;
 };
 
 export type LoginDTO = {

@@ -13,10 +13,10 @@ export const votesApiSlice = createApi({
   endpoints: (build) => ({
     getVotes: build.query<
       TVoteResponse & Record<'pages', number>,
-      TPagination & Record<'wardId', string>
+      TPagination & Record<'pollingUnitId', string>
     >({
-      query: ({ page = 0, size = 10, sortBy = 'id', wardId }) =>
-        `/?page=${page}&size=${size}&sortBy=${sortBy}&wardId=${wardId}`,
+      query: ({ page = 0, size = 10, sortBy = 'id', pollingUnitId }) =>
+        `/?page=${page}&size=${size}&sortBy=${sortBy}&wardId=${pollingUnitId}`,
       transformResponse: (response: TVoteResponse, _, { size = 10 }) => {
         return { ...response, pages: Math.ceil(response.total / size) };
       },
