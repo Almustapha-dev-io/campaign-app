@@ -47,6 +47,10 @@ function PollingUnitIssuesList() {
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
     : false;
 
+  const isObserver = userDetails
+    ? userDetails.roles.map((r) => r.name).includes(Roles.ObservationRoomAgent)
+    : false;
+
   useEffect(() => {
     if (userDetails && userDetails.pollingUnit) {
       setPollingUnit(userDetails.pollingUnit.id.toString());
@@ -54,10 +58,10 @@ function PollingUnitIssuesList() {
   }, [userDetails]);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (isAdmin || isObserver) {
       getLgas();
     }
-  }, [getLgas, isAdmin]);
+  }, [getLgas, isAdmin, isObserver]);
 
   useEffect(() => {
     if (lga) {
@@ -75,7 +79,7 @@ function PollingUnitIssuesList() {
 
   return (
     <>
-      {isAdmin && (
+      {(isAdmin || isObserver) && (
         <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
           <FormControl
             w={{ base: 'full', md: '200px' }}

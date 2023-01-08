@@ -65,14 +65,14 @@ export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
     label: 'Polling Unit Data',
     sidebarOpen,
     url: '/polling-unit-data',
-    roles: [Roles.PartyAgent, Roles.SuperAdmin],
+    roles: [Roles.PartyAgent, Roles.SuperAdmin, Roles.ObservationRoomAgent],
   },
   {
     icon: MdOutlinePermMedia,
     label: 'Polling Unit Issues',
     sidebarOpen,
     url: '/polling-unit-issues',
-    roles: [Roles.PartyAgent, Roles.SuperAdmin],
+    roles: [Roles.PartyAgent, Roles.SuperAdmin, Roles.ObservationRoomAgent],
   },
   {
     icon: BsBoxSeam,

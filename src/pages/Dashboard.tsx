@@ -221,16 +221,6 @@ function Dashboard() {
 
       {(isRole(Roles.PartyAgent) || isAdmin || isObserver) && (
         <VStack w="full" spacing="4" align="flex-start">
-          <SkeletonText
-            noOfLines={1}
-            h="8px"
-            isLoaded={!pollingUnitAnalyticsLoading}
-            pb="4"
-          >
-            <Heading fontSize="sm" color="gray.600">
-              Polling Unit Votes Analysis
-            </Heading>
-          </SkeletonText>
           {pollingUnitAnalyticsLoading && (
             <Center bg="white" shadow="sm" rounded="xl" w="full" h="300px">
               <Spinner color="green.500" />
@@ -238,27 +228,39 @@ function Dashboard() {
           )}
 
           {!pollingUnitAnalyticsLoading && !!pollingUnitAnalytics && (
-            <SimpleGrid
-              w="full"
-              columns={{ base: 1, md: 2, xl: 4 }}
-              spacing="6"
-            >
-              {pollingUnitAnalytics.map((analytics) => (
-                <Card key={uuid()}>
-                  <VStack w="full" align="flex-start" spacing="1" px="2">
-                    <Text color="gray.500" fontSize="sm">
-                      {analytics.party} - votes
-                    </Text>
-                    <Heading>{analytics.totalVotes}</Heading>
-                  </VStack>
-                </Card>
-              ))}
-            </SimpleGrid>
+            <>
+              <SkeletonText
+                noOfLines={1}
+                h="8px"
+                isLoaded={!pollingUnitAnalyticsLoading}
+                pb="4"
+              >
+                <Heading fontSize="sm" color="gray.600">
+                  Polling Unit Votes Analysis
+                </Heading>
+              </SkeletonText>
+              <SimpleGrid
+                w="full"
+                columns={{ base: 1, md: 2, xl: 4 }}
+                spacing="6"
+              >
+                {pollingUnitAnalytics.map((analytics) => (
+                  <Card key={uuid()}>
+                    <VStack w="full" align="flex-start" spacing="1" px="2">
+                      <Text color="gray.500" fontSize="sm">
+                        {analytics.party} - votes
+                      </Text>
+                      <Heading>{analytics.totalVotes}</Heading>
+                    </VStack>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            </>
           )}
         </VStack>
       )}
 
-      {(isAdmin || isObserver) && (
+      {isAdmin && (
         <VStack w="full" spacing="4" align="flex-start">
           <SkeletonText
             noOfLines={1}

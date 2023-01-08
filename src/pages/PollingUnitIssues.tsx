@@ -29,7 +29,9 @@ import getServerErrorMessage from 'utilities/getServerErrorMessage';
 import PollingUnitIssuesList from './PollingUnitIssuesList';
 
 function PollingUnitIssues() {
-  useRoles(new Set([Roles.SuperAdmin, Roles.PartyAgent]));
+  useRoles(
+    new Set([Roles.SuperAdmin, Roles.PartyAgent, Roles.ObservationRoomAgent])
+  );
   const { userDetails } = useAuth();
   const [mediaCategory, setMediaCategory] = useState('');
   const [otherValue, setOtherValue] = useState('');
@@ -124,11 +126,18 @@ function PollingUnitIssues() {
     return userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin);
   };
 
+  const isObserver = () => {
+    if (!userDetails) return false;
+    return userDetails.roles
+      .map((r) => r.name)
+      .includes(Roles.ObservationRoomAgent);
+  };
+
   if (!userDetails) {
     return null;
   }
 
-  if (!userDetails.pollingUnit && !isAdmin()) {
+  if (!userDetails.pollingUnit && !(isAdmin() || isObserver())) {
     return (
       <Center w="full" h="500px">
         <VStack w="full" spacing="4">
@@ -153,7 +162,7 @@ function PollingUnitIssues() {
         <Heading fontSize="3xl">Polling Unit Issues</Heading>
       </Stack>
 
-      {!isAdmin() && (
+      {!isAdmin() && !isObserver() && (
         <Box
           w="full"
           py="8"

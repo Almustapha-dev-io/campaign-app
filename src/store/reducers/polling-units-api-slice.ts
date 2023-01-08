@@ -20,7 +20,6 @@ export const pollingUnitApiSlice = createApi({
     getPollingUnits: build.query<TPollingUnit[], number>({
       query: (wardId) => `?wardId=${wardId}&page=0&size=10000`,
       transformResponse: (res: TPaginationResponse<TPollingUnit>) => {
-        console.log({ data: res.data });
         return res.data;
       },
       providesTags: ['Units'],

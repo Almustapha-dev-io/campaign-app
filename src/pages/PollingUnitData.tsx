@@ -34,13 +34,16 @@ import { Roles } from 'types/roles';
 import getServerErrorMessage from 'utilities/getServerErrorMessage';
 
 function PollingUnitData() {
-  useRoles(new Set([Roles.SuperAdmin, Roles.PartyAgent]));
+  useRoles(
+    new Set([Roles.SuperAdmin, Roles.PartyAgent, Roles.ObservationRoomAgent])
+  );
   const [lga, setLga] = useState('');
   const [ward, setWard] = useState('');
   const [pollingUnit, setPollingUnit] = useState('');
   const [accreditedVoters, setAccreditedVoters] = useState(0);
   const [registeredVoter, setRegisteredVoter] = useState(0);
   const [invalidVoter, setInvalidVoters] = useState(0);
+  const [unit, setUnit] = useState<TPollingUnit | null>(null);
 
   const [
     getLgas,
@@ -106,19 +109,27 @@ function PollingUnitData() {
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
     : false;
 
-  useEffect(() => {
-    if (userDetails && userDetails.pollingUnit) {
-      setPollingUnit(userDetails.pollingUnit.id.toString());
-      setAccreditedVoters(userDetails.pollingUnit.accreditedVoters);
-      setRegisteredVoter(userDetails.pollingUnit.registeredVoters);
-    }
-  }, [userDetails]);
+  const isObserver = userDetails
+    ? userDetails.roles.map((r) => r.name).includes(Roles.ObservationRoomAgent)
+    : false;
 
   useEffect(() => {
-    if (isAdmin) {
-      getLgas();
+    if (unit) {
+      setAccreditedVoters(unit.accreditedVoters);
+      setRegisteredVoter(unit.registeredVoters);
+      setInvalidVoters(unit.invalidVoters);
     }
-  }, [getLgas, isAdmin]);
+  }, [unit]);
+
+  useEffect(() => {
+    if (isAdmin || isObserver) {
+      getLgas();
+    } else {
+      if (userDetails && userDetails.pollingUnit) {
+        getPollingUnits(userDetails.pollingUnit.ward.id);
+      }
+    }
+  }, [getLgas, getPollingUnits, isAdmin, isObserver, userDetails]);
 
   useEffect(() => {
     if (lga) {
@@ -133,6 +144,27 @@ function PollingUnitData() {
       getPollingUnits(Number(ward));
     }
   }, [getPollingUnits, ward]);
+
+  useEffect(() => {
+    let pu: TPollingUnit | undefined;
+    if (isAdmin || isObserver) {
+      if (pollingUnits) {
+        pu = pollingUnits.find((p) => p.id.toString() === pollingUnit);
+        if (pu) {
+          setUnit(pu);
+        }
+      }
+    } else {
+      if (pollingUnits && userDetails && userDetails.pollingUnit) {
+        pu = pollingUnits.find(
+          (p) => p.id.toString() === userDetails.pollingUnit?.id.toString()
+        );
+        if (pu) {
+          setUnit(pu);
+        }
+      }
+    }
+  }, [isAdmin, isObserver, pollingUnit, pollingUnits, userDetails]);
 
   useEffect(() => {
     if (isSuccess && !isLoading) {
@@ -152,10 +184,7 @@ function PollingUnitData() {
     return null;
   }
 
-  if (
-    !userDetails.pollingUnit &&
-    !userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
-  ) {
+  if (!userDetails.pollingUnit && !(isAdmin || isObserver)) {
     return (
       <Center w="full" h="500px">
         <VStack w="full" spacing="4">
@@ -180,7 +209,7 @@ function PollingUnitData() {
         <Heading fontSize="3xl">Polling Unit Data</Heading>
       </Stack>
 
-      {isAdmin && (
+      {(isAdmin || isObserver) && (
         <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
           <FormControl
             w={{ base: 'full', md: '200px' }}
@@ -262,7 +291,7 @@ function PollingUnitData() {
         <Text>Enter Polling Unit Voters Details</Text>
 
         <VStack w={{ base: 'full', md: '500px' }} mt="12" spacing="6">
-          <FormControl isReadOnly={isAdmin}>
+          <FormControl isReadOnly={isAdmin || isObserver}>
             <FormLabel>Total Registered Voters</FormLabel>
             <NumberInput
               size="lg"
@@ -277,7 +306,7 @@ function PollingUnitData() {
             </NumberInput>
           </FormControl>
 
-          <FormControl isReadOnly={isAdmin}>
+          <FormControl isReadOnly={isAdmin || isObserver}>
             <FormLabel>Total Accredited Voters</FormLabel>
             <NumberInput
               size="lg"
@@ -292,7 +321,7 @@ function PollingUnitData() {
             </NumberInput>
           </FormControl>
 
-          <FormControl isReadOnly={isAdmin}>
+          <FormControl isReadOnly={isAdmin || isObserver}>
             <FormLabel>Invalid Voters</FormLabel>
             <NumberInput
               size="lg"
@@ -307,7 +336,7 @@ function PollingUnitData() {
             </NumberInput>
           </FormControl>
 
-          {!isAdmin && (
+          {!isAdmin && !isObserver && (
             <HStack w="full" justify="flex-end" pt="5">
               <Button
                 size="lg"
