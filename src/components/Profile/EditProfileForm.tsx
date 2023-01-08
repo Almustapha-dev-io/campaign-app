@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 
 import { TUser } from 'types/user';
 import ChangePassword from './ChangePassword';
+import UploadProfileImage from './UploadProfileImage';
 
 type Props = {
   user: TUser;
@@ -40,6 +41,11 @@ function EditProfileForm({ user }: Props) {
     mode: 'onChange',
   });
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const {
+    isOpen: isFileOpen,
+    onClose: onFileClose,
+    onOpen: onFileOpen,
+  } = useDisclosure();
 
   const isActive = user.status === 'ACTIVE';
 
@@ -62,6 +68,7 @@ function EditProfileForm({ user }: Props) {
   return (
     <>
       <ChangePassword isOpen={isOpen} onClose={onClose} />
+      <UploadProfileImage isOpen={isFileOpen} onClose={onFileClose} />
       <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
         <VStack
           w="full"
@@ -81,6 +88,7 @@ function EditProfileForm({ user }: Props) {
                 bottom="15px"
                 aria-label="remove Image"
                 icon={<EditIcon />}
+                onClick={onFileOpen}
               />
             </Avatar>
 

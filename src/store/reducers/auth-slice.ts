@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { changePassword, logIn } from 'api/auth';
 import { uploadVoters } from 'api/voters';
 import { toast } from 'react-toastify';
@@ -31,6 +31,11 @@ const authSlice = createSlice({
       delete state.error;
       delete state.uploadSuccess;
       state.status = 'idle';
+    },
+    setUserImage(state, { payload }: PayloadAction<string>) {
+      if (state.userDetails) {
+        state.userDetails.profilePictureUrl = payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -74,6 +79,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logOut, startTask, reset } = authSlice.actions;
+export const { logOut, startTask, reset, setUserImage } = authSlice.actions;
 
 export default authSlice.reducer;

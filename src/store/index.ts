@@ -4,6 +4,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import authReducer from './reducers/auth-slice';
+import fileUploadReducer from './reducers/upload-slice';
 import { electionTypeApiSlice } from './reducers/election-type-api-slice';
 import { feedbackApiSlice } from './reducers/feedback-api-slice';
 import { pollingUnitApiSlice } from './reducers/polling-units-api-slice';
@@ -22,6 +23,7 @@ export const configureStoreWithMiddleware = (initialState = {}) => {
 
   const rootReducer = combineReducers({
     auth: authReducer,
+    fileUpload: fileUploadReducer,
     [rolesApiSlie.reducerPath]: rolesApiSlie.reducer,
     [usersApiSlice.reducerPath]: usersApiSlice.reducer,
     [electionTypeApiSlice.reducerPath]: electionTypeApiSlice.reducer,

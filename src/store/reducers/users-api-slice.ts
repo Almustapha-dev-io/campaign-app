@@ -42,6 +42,14 @@ const usersApiSlice = createApi({
       invalidatesTags: ['User', 'UserAnalytics'],
     }),
 
+    updateUserProfileImage: build.mutation<any, string>({
+      query: (imgURL) => ({
+        url: `/profile-picture`,
+        method: 'PUT',
+        body: { imageUrl: imgURL },
+      }),
+    }),
+
     disableUser: build.mutation<any, string>({
       query: (email) => ({
         url: `/disable-user?email=${email}`,
@@ -67,6 +75,7 @@ export const {
   useDisableUserMutation,
   useGetUserAnalyticsQuery,
   useEnableUserMutation,
+  useUpdateUserProfileImageMutation,
 } = usersApiSlice;
 
 export default usersApiSlice;
