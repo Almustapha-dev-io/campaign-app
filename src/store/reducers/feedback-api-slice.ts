@@ -13,10 +13,10 @@ export const feedbackApiSlice = createApi({
   endpoints: (build) => ({
     getFeedbacks: build.query<
       TFeedbackResponse & Record<'pages', number>,
-      TPagination & { wardId: string; channel?: string }
+      TPagination & { channel?: string }
     >({
-      query: ({ page = 0, size = 10, sortBy = 'id', wardId, channel }) =>
-        `/?page=${page}&size=${size}&sortBy=${sortBy}&wardId=${wardId}${
+      query: ({ page = 0, size = 10, sortBy = 'id', channel }) =>
+        `/?page=${page}&size=${size}&sortBy=${sortBy}${
           channel ? `&channel=${channel}` : ''
         }`,
       transformResponse: (response: TFeedbackResponse, _, { size = 10 }) => {

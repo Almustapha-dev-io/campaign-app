@@ -110,6 +110,7 @@ function AddElectionType({ isOpen, onClose, ...rest }: Props) {
 
   return (
     <Drawer
+      blockScrollOnMount={false}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isOpen={isOpen}

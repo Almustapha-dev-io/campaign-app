@@ -38,7 +38,6 @@ function Vote() {
       <AddVote user={userDetails} />
       <VStack w="full" py={{ base: 4, lg: 12 }} spacing="10" align="flex-start">
         <VotesAction />
-
         <VotesList />
       </VStack>
     </VoteContextProvider>

@@ -57,22 +57,22 @@ function AddFeedback({ user }: Props) {
   const { selectedFeedback, setSelectedFeedback, isOpen, onClose } =
     useContext(FeedbackContext);
 
-  const {
-    isFetching: isFetchingLgs,
-    data: lgas,
-    isError: isLgaError,
-    error: lgaError,
-  } = useGetLGAsQuery();
+  // const {
+  //   isFetching: isFetchingLgs,
+  //   data: lgas,
+  //   isError: isLgaError,
+  //   error: lgaError,
+  // } = useGetLGAsQuery();
 
-  const [
-    getWards,
-    {
-      isFetching: isFetchingWards,
-      data: wards,
-      isError: isWardError,
-      error: wardError,
-    },
-  ] = useLazyGetWardsQuery();
+  // const [
+  //   getWards,
+  //   {
+  //     isFetching: isFetchingWards,
+  //     data: wards,
+  //     isError: isWardError,
+  //     error: wardError,
+  //   },
+  // ] = useLazyGetWardsQuery();
 
   const [
     addFeedback,
@@ -109,7 +109,7 @@ function AddFeedback({ user }: Props) {
     updateFeedback({
       feedbackId: selectedFeedback.id,
       ...values,
-      wardId: user.ward ? user.ward.id.toString() : '',
+      // wardId: user.ward ? user.ward.id.toString() : '',
     });
   };
 
@@ -123,7 +123,7 @@ function AddFeedback({ user }: Props) {
 
       // setValue('wardId', user.ward ? user.ward.name : '');
       if (selectedFeedback) {
-        setValue('wardId', selectedFeedback.ward.name);
+        // setValue('wardId', selectedFeedback.ward.name);
         setValue('comment', selectedFeedback.comment);
       }
     }
@@ -163,20 +163,21 @@ function AddFeedback({ user }: Props) {
     const subscription = watch((value, { name }) => {
       console.log(value);
 
-      if (name === 'lgaId') {
-        if (!selectedFeedback) {
-          resetField('wardId');
-        }
-        if (value.lgaId) {
-          getWards(value.lgaId.toString());
-        }
-      }
+      // if (name === 'lgaId') {
+      //   if (!selectedFeedback) {
+      //     resetField('wardId');
+      //   }
+      //   if (value.lgaId) {
+      //     getWards(value.lgaId.toString());
+      //   }
+      // }
     });
     return () => subscription.unsubscribe();
-  }, [getWards, resetField, selectedFeedback, watch]);
+  }, [resetField, selectedFeedback, watch]);
 
   return (
     <Drawer
+      blockScrollOnMount={false}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isOpen={isOpen}
@@ -200,7 +201,7 @@ function AddFeedback({ user }: Props) {
         <DrawerBody>
           <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
             <VStack w="full" pt="8" spacing="8">
-              <FormControl>
+              {/* <FormControl>
                 <FormLabel>Local Gov't</FormLabel>
                 <Select {...register('lgaId')} defaultValue="">
                   <option value="" selected hidden>
@@ -230,7 +231,7 @@ function AddFeedback({ user }: Props) {
                       ))
                     : null}
                 </Select>
-              </FormControl>
+              </FormControl> */}
 
               <FormControl isInvalid={!!errors.channel}>
                 <FormLabel>Channel</FormLabel>

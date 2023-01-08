@@ -31,15 +31,13 @@ import { useGetElectionTypesQuery } from 'store/reducers/election-type-api-slice
 import { useLazyGetWardsQuery } from 'store/reducers/states-api-slice';
 import { TLocalGovernment } from 'types/ward';
 
-type Props = Omit<ModalProps, 'children'> & {
-  lgas: TLocalGovernment[];
-};
+type Props = Omit<ModalProps, 'children'>;
 
-function FileUpload({ isOpen, onClose, lgas }: Props) {
+function FileUpload({ isOpen, onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [ward, setWard] = useState('');
-  const [lga, setLga] = useState('');
+  // const [ward, setWard] = useState('');
+  // const [lga, setLga] = useState('');
   const [electionType, setElectionType] = useState('');
 
   const { data, isFetching, isError, refetch } = useGetElectionTypesQuery();
@@ -77,13 +75,13 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
   };
 
   const submitHandler = () => {
-    if (status === 'pending' || !selectedFile || !ward) return;
+    if (status === 'pending' || !selectedFile) return;
 
     dispatch(startTask());
     dispatch(
       uploadVoters({
         file: selectedFile,
-        wardId: ward,
+        // wardId: ward,
         electionTypeId: electionType,
       })
     );
@@ -95,17 +93,17 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
     }
   }, [uploadSuccess, isOpen, onClose]);
 
-  useEffect(() => {
-    if (lga) {
-      setWard('');
-      getWards(lga);
-    }
-  }, [getWards, lga]);
+  // useEffect(() => {
+  //   if (lga) {
+  //     setWard('');
+  //     getWards(lga);
+  //   }
+  // }, [getWards, lga]);
 
   let content = (
     <VStack w="full" spacing="4">
       <Icon color="blue.100" fontSize="6xl" as={BsFillCloudUploadFill} />
-      <FormControl>
+      {/* <FormControl>
         <FormLabel>Select Local Gov't</FormLabel>
         <Select
           defaultValue=""
@@ -140,7 +138,7 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
               </option>
             ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       <FormControl>
         <FormLabel>Select Election Type</FormLabel>
@@ -212,20 +210,20 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
     );
   }
 
-  if (!isFetchingWards && isWardError) {
-    content = (
-      <Center w="full" h="400px">
-        <VStack w="full" spacing="4">
-          <VStack w="full">
-            <WarningIcon fontSize="5xl" color="red.500" />
-            <Text color="red.500">Error getting wards</Text>
-          </VStack>
+  // if (!isFetchingWards && isWardError) {
+  //   content = (
+  //     <Center w="full" h="400px">
+  //       <VStack w="full" spacing="4">
+  //         <VStack w="full">
+  //           <WarningIcon fontSize="5xl" color="red.500" />
+  //           <Text color="red.500">Error getting wards</Text>
+  //         </VStack>
 
-          <Button onClick={() => getWards(lga)}>Retry</Button>
-        </VStack>
-      </Center>
-    );
-  }
+  //         <Button onClick={() => getWards(lga)}>Retry</Button>
+  //       </VStack>
+  //     </Center>
+  //   );
+  // }
 
   return (
     <Modal
@@ -235,8 +233,8 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
       closeOnOverlayClick={false}
       onCloseComplete={() => {
         dispatch(reset());
-        setWard('');
-        setLga('');
+        // setWard('');
+        // setLga('');
         setSelectedFile(null);
       }}
     >
@@ -250,7 +248,7 @@ function FileUpload({ isOpen, onClose, lgas }: Props) {
           {!isFetching && !isError && !!selectedFile && (
             <Button
               mr={3}
-              isDisabled={status === 'pending' || !ward || !electionType}
+              isDisabled={status === 'pending' || !electionType}
               isLoading={status === 'pending'}
               onClick={submitHandler}
             >

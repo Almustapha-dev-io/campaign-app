@@ -9,11 +9,11 @@ import { TFeedback } from 'types/feedback';
 import { TPagination } from 'types/paginaiton';
 
 type Props = {
-  wardId: string;
+  // wardId: string;
   channel: string;
 };
 
-function FeedbackTable({ wardId, channel }: Props) {
+function FeedbackTable({ channel }: Props) {
   const [getFeedbacks, { isError, isFetching, currentData: data }] =
     useLazyGetFeedbacksQuery();
 
@@ -22,9 +22,9 @@ function FeedbackTable({ wardId, channel }: Props) {
 
   const fetchFeedbacks = useCallback(
     (data: TPagination) => {
-      getFeedbacks({ wardId: wardId, channel, ...data });
+      getFeedbacks({ channel, ...data });
     },
-    [channel, getFeedbacks, wardId]
+    [channel, getFeedbacks]
   );
 
   const columns = useMemo<Column<TFeedback>[]>(
@@ -36,11 +36,11 @@ function FeedbackTable({ wardId, channel }: Props) {
           <>{`${value.substring(0, 32)}${value.length > 32 ? '...' : ''} `}</>
         ),
       },
-      {
-        Header: 'Ward',
-        accessor: 'ward',
-        Cell: ({ value }) => <>{value.name}</>,
-      },
+      // {
+      //   Header: 'Ward',
+      //   accessor: 'ward',
+      //   Cell: ({ value }) => <>{value.name}</>,
+      // },
       {
         Header: 'Channel',
         accessor: 'channel',

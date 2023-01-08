@@ -206,6 +206,7 @@ function EditVoter() {
 
   return (
     <Drawer
+      blockScrollOnMount={false}
       isOpen={editOpen}
       placement="right"
       onClose={onEditClose}

@@ -17,30 +17,30 @@ import { Roles } from 'types/roles';
 import FeedbackTable from './FeedbackTable';
 
 function FeedbacksList() {
-  const [lga, setLga] = useState('');
-  const [ward, setWard] = useState('');
+  // const [lga, setLga] = useState('');
+  // const [ward, setWard] = useState('');
   const [channel, setChannel] = useState('');
 
   const { userDetails } = useAuth();
 
-  const [
-    getLgas,
-    {
-      isFetching: isFetchingLgs,
-      data: lgas,
-      isError: isLgaError,
-      error: lgaError,
-    },
-  ] = useLazyGetLGAsQuery();
-  const [
-    getWards,
-    {
-      isFetching: isFetchingWards,
-      data: wards,
-      isError: isWardError,
-      error: wardError,
-    },
-  ] = useLazyGetWardsQuery();
+  // const [
+  //   getLgas,
+  //   {
+  //     isFetching: isFetchingLgs,
+  //     data: lgas,
+  //     isError: isLgaError,
+  //     error: lgaError,
+  //   },
+  // ] = useLazyGetLGAsQuery();
+  // const [
+  //   getWards,
+  //   {
+  //     isFetching: isFetchingWards,
+  //     data: wards,
+  //     isError: isWardError,
+  //     error: wardError,
+  //   },
+  // ] = useLazyGetWardsQuery();
 
   const isAdmin = userDetails
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
@@ -52,18 +52,18 @@ function FeedbacksList() {
     }
   }, [userDetails]);
 
-  useEffect(() => {
-    // if (isAdmin) {
-    getLgas();
-    // }
-  }, [getLgas, isAdmin]);
+  // useEffect(() => {
+  //   // if (isAdmin) {
+  //   getLgas();
+  //   // }
+  // }, [getLgas, isAdmin]);
 
-  useEffect(() => {
-    if (lga) {
-      setWard('');
-      getWards(lga);
-    }
-  }, [getWards, lga]);
+  // useEffect(() => {
+  //   if (lga) {
+  //     setWard('');
+  //     getWards(lga);
+  //   }
+  // }, [getWards, lga]);
 
   return (
     <>
@@ -73,7 +73,7 @@ function FeedbacksList() {
         spacing="4"
         justify="flex-start"
       >
-        {true && (
+        {/* {true && (
           <>
             <FormControl
               w={{ base: 'full', md: '300px' }}
@@ -121,7 +121,7 @@ function FeedbacksList() {
               </Select>
             </FormControl>
           </>
-        )}
+        )} */}
 
         <FormControl w="300px" maxW="full">
           <FormLabel>Channel</FormLabel>
@@ -140,7 +140,7 @@ function FeedbacksList() {
         </FormControl>
       </Stack>
 
-      {!!ward && <FeedbackTable wardId={ward} channel={channel} />}
+      <FeedbackTable channel={channel} />
     </>
   );
 }

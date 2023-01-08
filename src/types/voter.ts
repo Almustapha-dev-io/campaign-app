@@ -15,7 +15,7 @@ export type TVoter = {
   phoneNumber: string;
   email: string;
   name: string;
-  ward: TWard;
+  // ward: TWard;
   dateAdded: string;
   status: VoterStatus;
   dateCalled: string;
@@ -28,7 +28,7 @@ export type TVoter = {
 
 export type UploadVotersDTO = {
   file: File;
-  wardId: string;
+  // wardId: string;
   electionTypeId: string;
 };
 

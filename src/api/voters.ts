@@ -19,7 +19,7 @@ export const uploadVoters = createAsyncThunk(
 
     const formData = new FormData();
     formData.append('file', data.file);
-    formData.append('wardId', data.wardId);
+    // formData.append('wardId', data.wardId);
     formData.append('electionTypeId', data.electionTypeId);
 
     try {

@@ -2,20 +2,34 @@ import {
   Box,
   BoxProps,
   Center,
+  FormControl,
+  FormLabel,
   Heading,
+  Select,
   SimpleGrid,
   Skeleton,
   SkeletonText,
   Spinner,
+  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import useAuth from 'hooks/useAuth';
+import { useEffect, useState } from 'react';
 import uuid from 'react-uuid';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { useGetFeedbackAnalysisQuery } from 'store/reducers/feedback-api-slice';
+import { useLazyGetPollingUnitsQuery } from 'store/reducers/polling-units-api-slice';
+import {
+  useLazyGetLGAsQuery,
+  useLazyGetWardsQuery,
+} from 'store/reducers/states-api-slice';
 import { useGetUserAnalyticsQuery } from 'store/reducers/users-api-slice';
 import { useGetVotersAnalyticsQuery } from 'store/reducers/voters-api-slice';
+import {
+  useGetPollingUnitVoteAnlyticsQuery,
+  useLazyGetPollingUnitVoteAnlyticsQuery,
+} from 'store/reducers/votes-api-slice';
 import { Roles } from 'types/roles';
 
 function Card({ children, ...rest }: BoxProps) {
@@ -39,12 +53,85 @@ function Dashboard() {
   const { data: userAnalyticsData, isFetching: userAnalyticsLoading } =
     useGetUserAnalyticsQuery();
 
+  const [
+    getPollingUnitsAnalysis,
+    { data: pollingUnitAnalytics, isFetching: pollingUnitAnalyticsLoading },
+  ] = useLazyGetPollingUnitVoteAnlyticsQuery();
+
+  const [lga, setLga] = useState('');
+  const [ward, setWard] = useState('');
+  const [pollingUnit, setPollingUnit] = useState('');
+
+  const [
+    getLgas,
+    {
+      isFetching: isFetchingLgs,
+      data: lgas,
+      isError: isLgaError,
+      error: lgaError,
+    },
+  ] = useLazyGetLGAsQuery();
+  const [
+    getWards,
+    {
+      isFetching: isFetchingWards,
+      data: wards,
+      isError: isWardError,
+      error: wardError,
+    },
+  ] = useLazyGetWardsQuery();
+
+  const [
+    getPollingUnits,
+    {
+      isFetching: isFetchingPUs,
+      data: pollingUnits,
+      isError: isPollingUnitError,
+    },
+  ] = useLazyGetPollingUnitsQuery();
+
   const { userDetails } = useAuth();
 
   const isRole = (role: Roles) => {
     if (!userDetails) return false;
     return userDetails.roles.map((r) => r.name).includes(role);
   };
+
+  const isAdmin = userDetails
+    ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
+    : false;
+
+  useEffect(() => {
+    if (isAdmin) {
+      if (pollingUnit) {
+        getPollingUnitsAnalysis(pollingUnit);
+      }
+    } else {
+      if (userDetails && userDetails.pollingUnit) {
+        getPollingUnitsAnalysis(userDetails.pollingUnit.id.toString());
+      }
+    }
+  }, [getPollingUnitsAnalysis, isAdmin, pollingUnit, userDetails]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      getLgas();
+    }
+  }, [getLgas, isAdmin]);
+
+  useEffect(() => {
+    if (lga) {
+      setWard('');
+      getWards(lga);
+    }
+  }, [getWards, lga]);
+
+  useEffect(() => {
+    if (ward) {
+      setPollingUnit('');
+      getPollingUnits(Number(ward));
+    }
+  }, [getPollingUnits, ward]);
 
   return (
     <VStack
@@ -57,60 +144,116 @@ function Dashboard() {
     >
       <Heading fontSize="3xl">Dashboard</Heading>
 
-      {isRole(Roles.PartyAgent) && (
-        <VStack w="full" spacing="4" align="flex-start">
-          <SkeletonText
-            noOfLines={1}
-            h="8px"
-            isLoaded={!userAnalyticsLoading}
-            pb="4"
+      {isAdmin && (
+        <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
+          <FormControl
+            w={{ base: 'full', md: '200px' }}
+            isDisabled={isFetchingLgs}
           >
-            <Heading fontSize="sm" color="gray.600">
-              Voting Results
-            </Heading>
-          </SkeletonText>
-          {userAnalyticsLoading && (
-            <Center bg="white" shadow="sm" rounded="xl" w="full" h="300px">
-              <Spinner color="green.500" />
-            </Center>
-          )}
+            <FormLabel>Local Gov't</FormLabel>
+            <Select
+              defaultValue=""
+              value={lga}
+              onChange={(e) => setLga(e.target.value)}
+            >
+              <option value="" hidden>
+                Select Local Gov't
+              </option>
+              {!!lgas
+                ? lgas.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
 
-          <SimpleGrid w="full" columns={{ base: 1, md: 2, xl: 4 }} spacing="6">
-            <Card>
-              <VStack w="full" align="flex-start" spacing="1" px="2">
-                <Text color="gray.500" fontSize="sm">
-                  Registered Voters
-                </Text>
-                <Heading>999</Heading>
-              </VStack>
-            </Card>
-            <Card>
-              <VStack w="full" align="flex-start" spacing="1" px="2">
-                <Text color="gray.500" fontSize="sm">
-                  Accredited Voters
-                </Text>
-                <Heading>999</Heading>
-              </VStack>
-            </Card>
-            <Card>
-              <VStack w="full" align="flex-start" spacing="1" px="2">
-                <Text color="gray.500" fontSize="sm">
-                  Invalid Voters
-                </Text>
-                <Heading>999</Heading>
-              </VStack>
-            </Card>
-            <Card>
-              <VStack w="full" align="flex-start" spacing="1" px="2">
-                <Text color="gray.500" fontSize="sm">
-                  Recorded Voters
-                </Text>
-                <Heading>999</Heading>
-              </VStack>
-            </Card>
-          </SimpleGrid>
-        </VStack>
+          <FormControl
+            w={{ base: 'full', md: '200px' }}
+            isDisabled={isFetchingLgs || isFetchingWards || !lga}
+          >
+            <FormLabel>Ward</FormLabel>
+            <Select
+              defaultValue=""
+              value={ward}
+              onChange={(e) => setWard(e.target.value)}
+            >
+              <option value="" hidden>
+                Select Ward
+              </option>
+              {!!wards
+                ? wards.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
+
+          <FormControl
+            w={{ base: 'full', md: '200px' }}
+            isDisabled={isFetchingLgs || isFetchingWards || !lga || !ward}
+          >
+            <FormLabel>Polling Unit</FormLabel>
+            <Select
+              defaultValue=""
+              value={pollingUnit}
+              onChange={(e) => setPollingUnit(e.target.value)}
+            >
+              <option>Select One</option>
+              {!!pollingUnits
+                ? pollingUnits.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
+        </Stack>
       )}
+
+      {isRole(Roles.PartyAgent) ||
+        (isAdmin && (
+          <VStack w="full" spacing="4" align="flex-start">
+            <SkeletonText
+              noOfLines={1}
+              h="8px"
+              isLoaded={!pollingUnitAnalyticsLoading}
+              pb="4"
+            >
+              <Heading fontSize="sm" color="gray.600">
+                Polling Unit Votes Analysis
+              </Heading>
+            </SkeletonText>
+            {pollingUnitAnalyticsLoading && (
+              <Center bg="white" shadow="sm" rounded="xl" w="full" h="300px">
+                <Spinner color="green.500" />
+              </Center>
+            )}
+
+            {!pollingUnitAnalyticsLoading && !!pollingUnitAnalytics && (
+              <SimpleGrid
+                w="full"
+                columns={{ base: 1, md: 2, xl: 4 }}
+                spacing="6"
+              >
+                {pollingUnitAnalytics.map((analytics) => (
+                  <Card key={uuid()}>
+                    <VStack w="full" align="flex-start" spacing="1" px="2">
+                      <Text color="gray.500" fontSize="sm">
+                        {analytics.party} - votes
+                      </Text>
+                      <Heading>{analytics.totalVotes}</Heading>
+                    </VStack>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            )}
+          </VStack>
+        ))}
 
       {isRole(Roles.SuperAdmin) && (
         <VStack w="full" spacing="4" align="flex-start">

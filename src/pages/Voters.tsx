@@ -29,66 +29,66 @@ function Voters() {
   useRoles(new Set([Roles.SuperAdmin, Roles.CallCenterAgent]));
   const { userDetails } = useAuth();
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [lga, setLga] = useState('');
-  const [ward, setWard] = useState('');
+  // const [lga, setLga] = useState('');
+  // const [ward, setWard] = useState('');
 
-  const [
-    getLgas,
-    {
-      isFetching: isFetchingLgs,
-      data: lgas,
-      isError: isLgaError,
-      error: lgaError,
-    },
-  ] = useLazyGetLGAsQuery();
-  const [
-    getWards,
-    {
-      isFetching: isFetchingWards,
-      data: wards,
-      isError: isWardError,
-      error: wardError,
-    },
-  ] = useLazyGetWardsQuery();
+  // const [
+  //   getLgas,
+  //   {
+  //     isFetching: isFetchingLgs,
+  //     data: lgas,
+  //     isError: isLgaError,
+  //     error: lgaError,
+  //   },
+  // ] = useLazyGetLGAsQuery();
+  // const [
+  //   getWards,
+  //   {
+  //     isFetching: isFetchingWards,
+  //     data: wards,
+  //     isError: isWardError,
+  //     error: wardError,
+  //   },
+  // ] = useLazyGetWardsQuery();
 
   const [getVoters, { isFetching, currentData: data }] =
     useLazyGetVotersQuery();
 
   const fetchVoters = useCallback(
     (data: TPagination) => {
-      getVoters({ wardId: ward, ...data });
+      getVoters({ ...data });
     },
-    [getVoters, ward]
+    [getVoters]
   );
 
   const isAdmin = userDetails
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
     : false;
 
-  useEffect(() => {
-    if (userDetails && userDetails.ward) {
-      setWard(userDetails.ward.id.toString());
-    }
-  }, [userDetails]);
+  // useEffect(() => {
+  //   if (userDetails && userDetails.ward) {
+  //     setWard(userDetails.ward.id.toString());
+  //   }
+  // }, [userDetails]);
 
-  useEffect(() => {
-    if (/* isAdmin */ true) {
-      getLgas();
-    }
-  }, [getLgas, isAdmin]);
+  // useEffect(() => {
+  //   if (/* isAdmin */ true) {
+  //     getLgas();
+  //   }
+  // }, [getLgas, isAdmin]);
 
-  useEffect(() => {
-    if (lga) {
-      setWard('');
-      getWards(lga);
-    }
-  }, [getWards, lga]);
+  // useEffect(() => {
+  //   if (lga) {
+  //     setWard('');
+  //     getWards(lga);
+  //   }
+  // }, [getWards, lga]);
 
   return (
     <VoterContextProvider>
       <ViewVoter />
       <EditVoter />
-      {!!lgas && <FileUpload isOpen={isOpen} onClose={onClose} lgas={lgas} />}
+      <FileUpload isOpen={isOpen} onClose={onClose} />
       <VStack w="full" py={{ base: 4, lg: 12 }} spacing="16" align="flex-start">
         <Stack
           w="full"
@@ -102,18 +102,18 @@ function Voters() {
               w={{ base: 'full', md: 'auto' }}
               leftIcon={<FiUpload />}
               onClick={onOpen}
-              isDisabled={isFetchingLgs || isFetchingWards}
+              // isDisabled={isFetchingLgs || isFetchingWards}
             >
               Upload Voters
             </Button>
           )}
         </Stack>
 
-        {true && (
+        {/* {true && (
           <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
             <FormControl
               w={{ base: 'full', md: '300px' }}
-              isDisabled={isFetching || isFetchingLgs}
+              isDisabled={isFetching}
             >
               <FormLabel>Local Gov't</FormLabel>
               <Select
@@ -159,9 +159,9 @@ function Voters() {
               </Select>
             </FormControl>
           </Stack>
-        )}
+        )} */}
 
-        {!!ward && !!userDetails && (
+        {!!userDetails && (
           <VotersList
             data={data ? data.data : []}
             fetchData={fetchVoters}

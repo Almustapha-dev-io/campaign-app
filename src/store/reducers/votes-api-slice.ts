@@ -5,6 +5,11 @@ import { apiBaseURL } from 'utilities/env';
 import getBaseQueryWithLogout from 'utilities/getBaseQueryWithLogout';
 
 type TVoteResponse = TPaginationResponse<TVote>;
+type PollingUnitAnalysis = {
+  party: string;
+  pollingUnit: string;
+  totalVotes: number;
+};
 
 export const votesApiSlice = createApi({
   reducerPath: 'votesApi',
@@ -21,6 +26,11 @@ export const votesApiSlice = createApi({
         return { ...response, pages: Math.ceil(response.total / size) };
       },
       providesTags: ['Vote'],
+    }),
+
+    getPollingUnitVoteAnlytics: build.query<PollingUnitAnalysis[], string>({
+      query: (pollingUnitId) =>
+        `/analytics/polling-unit?pollingUnitId=${pollingUnitId}`,
     }),
 
     addVote: build.mutation<TVote, VoteDTO>({
@@ -48,4 +58,6 @@ export const {
   useGetVotesQuery,
   useLazyGetVotesQuery,
   useUpdateVoteMutation,
+  useGetPollingUnitVoteAnlyticsQuery,
+  useLazyGetPollingUnitVoteAnlyticsQuery,
 } = votesApiSlice;

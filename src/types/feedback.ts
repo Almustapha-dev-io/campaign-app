@@ -9,7 +9,7 @@ export enum FeedbackChannels {
 
 export type TFeedback = {
   id: number;
-  ward: TWard;
+  // ward: TWard;
   madeBy: string;
   dateAdded: string;
   comment: string;
@@ -19,6 +19,6 @@ export type TFeedback = {
 export type FeedbackDTO = {
   feedbackId?: number;
   comment: string;
-  wardId: string;
+  // wardId: string;
   channel: FeedbackChannels;
 };

@@ -49,15 +49,17 @@ function ViewVoter() {
         />
       </GridItem>
 
-      <VoterDetails
-        label="Phone Number"
-        value={selectedVoterToView?.phoneNumber ?? 'N/A'}
-      />
+      <GridItem colSpan={2}>
+        <VoterDetails
+          label="Phone Number"
+          value={selectedVoterToView?.phoneNumber ?? 'N/A'}
+        />
+      </GridItem>
 
-      <VoterDetails
+      {/* <VoterDetails
         label="Ward"
         value={selectedVoterToView?.ward.name ?? 'N/A'}
-      />
+      /> */}
 
       <GridItem colSpan={2}>
         <VoterDetails
@@ -109,6 +111,7 @@ function ViewVoter() {
 
   return (
     <Drawer
+      blockScrollOnMount={false}
       isOpen={viewOpen}
       placement="right"
       onClose={onViewClose}

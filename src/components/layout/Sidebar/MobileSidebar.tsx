@@ -50,7 +50,12 @@ function MobileSidebar() {
         />
       </HStack>
 
-      <Drawer isOpen={sidebarOpen} placement="left" onClose={toggleSidebar}>
+      <Drawer
+        blockScrollOnMount={false}
+        isOpen={sidebarOpen}
+        placement="left"
+        onClose={toggleSidebar}
+      >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />

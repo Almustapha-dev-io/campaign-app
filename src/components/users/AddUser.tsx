@@ -377,6 +377,7 @@ function AddUser({ isOpen, onClose }: Props) {
 
   return (
     <Drawer
+      blockScrollOnMount={false}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isOpen={isOpen}
