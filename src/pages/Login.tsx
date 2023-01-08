@@ -15,17 +15,17 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
-} from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import Logo from 'components/layout/Sidebar/Logo';
-import loginSchema, { TLoginFormValues } from 'form-schemas/login';
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { startTask } from 'store/reducers/auth-slice';
-import useAuth from 'hooks/useAuth';
-import { useEffect } from 'react';
-import { logIn } from 'api/auth';
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Logo from "components/layout/Sidebar/Logo";
+import loginSchema, { TLoginFormValues } from "form-schemas/login";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { startTask } from "store/reducers/auth-slice";
+import useAuth from "hooks/useAuth";
+import { useEffect } from "react";
+import { logIn } from "api/auth";
 
 const Login = () => {
   const {
@@ -34,7 +34,7 @@ const Login = () => {
     formState: { errors, isValid },
   } = useForm<TLoginFormValues>({
     resolver: yupResolver(loginSchema),
-    mode: 'onChange',
+    mode: "onChange",
   });
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuth) {
-      navigate('/');
+      navigate("/");
     }
   }, [isAuth, navigate]);
 
@@ -56,31 +56,31 @@ const Login = () => {
     <Box w="full" h="full" bg="green.50">
       <Container
         maxW="lg"
-        py={{ base: '12', md: '24' }}
-        px={{ base: '0', sm: '8' }}
+        py={{ base: "12", md: "24" }}
+        px={{ base: "0", sm: "8" }}
       >
         <Stack spacing="8">
           <Stack spacing="6">
             <Stack
-              spacing={{ base: '2', md: '3' }}
+              spacing={{ base: "2", md: "3" }}
               align="center"
               textAlign="center"
             >
               <Logo width="100px" height="100px" />
               <Heading
                 fontWeight="semibold"
-                size={useBreakpointValue({ base: 'sm', md: 'md' })}
+                size={useBreakpointValue({ base: "sm", md: "md" })}
               >
                 Log in to your account
               </Heading>
             </Stack>
           </Stack>
           <Box
-            py={{ base: '0', sm: '8' }}
-            px={{ base: '4', sm: '10' }}
+            py={{ base: "0", sm: "8" }}
+            px={{ base: "4", sm: "10" }}
             bg="white"
-            boxShadow={{ base: 'none', sm: useColorModeValue('md', 'md-dark') }}
-            borderRadius={{ base: 'none', sm: 'xl' }}
+            boxShadow={{ base: "none", sm: useColorModeValue("md", "md-dark") }}
+            borderRadius={{ base: "none", sm: "xl" }}
           >
             <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
               <Stack spacing="6">
@@ -93,7 +93,7 @@ const Login = () => {
                   )}
                   <FormControl isInvalid={!!errors.username}>
                     <FormLabel htmlFor="email">Email</FormLabel>
-                    <Input id="email" type="email" {...register('username')} />
+                    <Input id="email" type="email" {...register("username")} />
                     <FormErrorMessage>
                       {errors.username?.message}
                     </FormErrorMessage>
@@ -104,7 +104,7 @@ const Login = () => {
                     <Input
                       id="password"
                       type="password"
-                      {...register('password')}
+                      {...register("password")}
                     />
                     <FormErrorMessage>
                       {errors.password?.message}
@@ -122,8 +122,8 @@ const Login = () => {
                   variant="solid"
                   w="full"
                   type="submit"
-                  isLoading={status === 'pending'}
-                  isDisabled={!isValid || status === 'pending'}
+                  isLoading={status === "pending"}
+                  isDisabled={!isValid || status === "pending"}
                 >
                   Sign in
                 </Button>
