@@ -11,6 +11,11 @@ import { apiBaseURL } from 'utilities/env';
 import getBaseQueryWithLogout from 'utilities/getBaseQueryWithLogout';
 
 type TPollingUniIssuetResponse = TPaginationResponse<TPollingUnitIssue>;
+type TPollingUnitIssuesAnalyticsResponse = {
+  pollingUnitId: number;
+  pollingUnitName: string;
+  totalIssues: number;
+};
 
 export const pollingUnitApiSlice = createApi({
   reducerPath: 'pollingUnitApi',
@@ -56,6 +61,13 @@ export const pollingUnitApiSlice = createApi({
         return { ...response, pages: Math.ceil(response.total / size) };
       },
     }),
+
+    getIssuesAnalytics: build.query<
+      TPollingUnitIssuesAnalyticsResponse,
+      string
+    >({
+      query: (id) => `/issues/analytics?pollingUnitId=${id}`,
+    }),
   }),
 });
 
@@ -66,4 +78,6 @@ export const {
   useGetIssuesQuery,
   useLazyGetIssuesQuery,
   useUpdateUnitMutation,
+  useGetIssuesAnalyticsQuery,
+  useLazyGetIssuesAnalyticsQuery,
 } = pollingUnitApiSlice;

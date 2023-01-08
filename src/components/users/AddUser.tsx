@@ -24,7 +24,10 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import addUserSchema, { TAddUserFormValues } from 'form-schemas/user';
 import { WarningIcon } from '@chakra-ui/icons';
-import { useAddUserMutation } from 'store/reducers/users-api-slice';
+import {
+  useAddUserMutation,
+  useUpdateUserMutation,
+} from 'store/reducers/users-api-slice';
 import { useContext, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { UserContext } from 'contexts/user';
@@ -70,6 +73,17 @@ function AddUser({ isOpen, onClose }: Props) {
     { isError: isAddError, isLoading, isSuccess, error, reset: resetMutation },
   ] = useAddUserMutation();
 
+  const [
+    updateUser,
+    {
+      isError: isUpdateError,
+      isLoading: isUpdating,
+      isSuccess: isUpdated,
+      error: updateError,
+      reset: resetUpdateMutation,
+    },
+  ] = useUpdateUserMutation();
+
   const {
     register,
     handleSubmit,
@@ -91,8 +105,14 @@ function AddUser({ isOpen, onClose }: Props) {
   }, [isAddError, isLoading, error]);
 
   useEffect(() => {
+    if (isUpdateError && !isUpdating && updateError) {
+      toast(getServerErrorMessage(updateError), { type: 'error' });
+    }
+  }, [isUpdateError, isUpdating, updateError]);
+
+  useEffect(() => {
     if (isSuccess && !isLoading && isOpen) {
-      toast(`User successfully ${selectedUser ? 'updated' : 'added'}!`, {
+      toast(`User successfully added!`, {
         type: 'success',
       });
 
@@ -101,6 +121,14 @@ function AddUser({ isOpen, onClose }: Props) {
       }
     }
   }, [isSuccess, isLoading, selectedUser, onClose, isOpen]);
+
+  useEffect(() => {
+    if (isUpdated && !isUpdating && isOpen) {
+      toast(`User successfully updated!`, {
+        type: 'success',
+      });
+    }
+  }, [isOpen, isUpdated, isUpdating, selectedUser]);
 
   useEffect(() => {
     if (isOpen) {
@@ -113,14 +141,15 @@ function AddUser({ isOpen, onClose }: Props) {
         setValue('email', selectedUser.email, validationData);
         setValue('firstName', selectedUser.firstName, validationData);
         setValue('lastName', selectedUser.lastName, validationData);
-        if (selectedUser.ward) {
+        if (selectedUser.pollingUnit) {
+          setValue('pollingUnitId', selectedUser.pollingUnit.id);
           setValue(
             'lgaId',
-            selectedUser.ward.localGovernment.id,
+            selectedUser.pollingUnit.ward.localGovernment.id,
             validationData
           );
 
-          setValue('wardId', selectedUser.ward.id, validationData);
+          setValue('wardId', selectedUser.pollingUnit.ward.id, validationData);
         }
         setValue(
           'phoneNumber',
@@ -139,8 +168,6 @@ function AddUser({ isOpen, onClose }: Props) {
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
-      console.log(value);
-
       if (name === 'lgaId') {
         if (!selectedUser) {
           resetField('wardId');
@@ -185,7 +212,19 @@ function AddUser({ isOpen, onClose }: Props) {
       return;
     }
 
-    toast('User update coming soon...', { type: 'info' });
+    updateUser({
+      id: selectedUser.id,
+      email: values.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phoneNumber: values.phoneNumber,
+      profilePictureUrl: values.profilePictureUrl
+        ? values.profilePictureUrl
+        : '',
+      roleIds: roles,
+      wardId: values.wardId,
+      pollingUnitId: values.pollingUnitId,
+    });
   };
 
   let content = (
@@ -388,11 +427,12 @@ function AddUser({ isOpen, onClose }: Props) {
         setSelectedUser(null);
         reset({});
         resetMutation();
+        resetUpdateMutation();
       }}
     >
       <DrawerOverlay />
       <DrawerContent>
-        {!isLoading && <DrawerCloseButton />}
+        {!isLoading && !isUpdating && <DrawerCloseButton />}
         <DrawerHeader>{selectedUser ? 'Update' : 'Register'} User</DrawerHeader>
 
         <DrawerBody>{content}</DrawerBody>
@@ -401,13 +441,13 @@ function AddUser({ isOpen, onClose }: Props) {
           {!isFetching && !isError && (
             <Button
               mr={3}
-              isLoading={isLoading}
+              isLoading={isLoading || isUpdating}
               onClick={() => {
                 if (submitBtnRef.current) {
                   submitBtnRef.current.click();
                 }
               }}
-              isDisabled={!isValid || isLoading}
+              isDisabled={!isValid || isLoading || isUpdating}
             >
               Save
             </Button>

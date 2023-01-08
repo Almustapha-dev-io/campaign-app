@@ -19,7 +19,10 @@ import { useEffect, useState } from 'react';
 import uuid from 'react-uuid';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { useGetFeedbackAnalysisQuery } from 'store/reducers/feedback-api-slice';
-import { useLazyGetPollingUnitsQuery } from 'store/reducers/polling-units-api-slice';
+import {
+  useLazyGetIssuesAnalyticsQuery,
+  useLazyGetPollingUnitsQuery,
+} from 'store/reducers/polling-units-api-slice';
 import {
   useLazyGetLGAsQuery,
   useLazyGetWardsQuery,
@@ -90,6 +93,15 @@ function Dashboard() {
     },
   ] = useLazyGetPollingUnitsQuery();
 
+  const [
+    getPollingUnitsIssuesAnalytics,
+    {
+      isFetching: isFetchingPUIssue,
+      data: pollingUnitsIssueAnalytics,
+      isError: isPollingUnitIssueError,
+    },
+  ] = useLazyGetIssuesAnalyticsQuery();
+
   const { userDetails } = useAuth();
 
   const isRole = (role: Roles) => {
@@ -109,13 +121,22 @@ function Dashboard() {
     if (isAdmin || isObserver) {
       if (pollingUnit) {
         getPollingUnitsAnalysis(pollingUnit);
+        getPollingUnitsIssuesAnalytics(pollingUnit);
       }
     } else {
       if (userDetails && userDetails.pollingUnit) {
         getPollingUnitsAnalysis(userDetails.pollingUnit.id.toString());
+        getPollingUnitsIssuesAnalytics(userDetails.pollingUnit.id.toString());
       }
     }
-  }, [getPollingUnitsAnalysis, isAdmin, isObserver, pollingUnit, userDetails]);
+  }, [
+    getPollingUnitsAnalysis,
+    getPollingUnitsIssuesAnalytics,
+    isAdmin,
+    isObserver,
+    pollingUnit,
+    userDetails,
+  ]);
 
   useEffect(() => {
     if (isAdmin || isObserver) {
@@ -235,9 +256,11 @@ function Dashboard() {
                 isLoaded={!pollingUnitAnalyticsLoading}
                 pb="4"
               >
-                <Heading fontSize="sm" color="gray.600">
-                  Polling Unit Votes Analysis
-                </Heading>
+                {pollingUnitAnalytics.length > 0 && (
+                  <Heading fontSize="sm" color="gray.600">
+                    Polling Unit Votes Analysis
+                  </Heading>
+                )}
               </SkeletonText>
               <SimpleGrid
                 w="full"
@@ -257,6 +280,31 @@ function Dashboard() {
               </SimpleGrid>
             </>
           )}
+        </VStack>
+      )}
+
+      {(isRole(Roles.PartyAgent) || isAdmin || isObserver) && pollingUnit && (
+        <VStack w="full" spacing="4" align="flex-start">
+          <Skeleton
+            noOfLines={1}
+            h="100px"
+            w="full"
+            isLoaded={!isFetchingPUIssue}
+            pb="4"
+          >
+            <Card key={uuid()}>
+              <VStack w="full" align="flex-start" spacing="1" px="2">
+                <Text color="gray.500" fontSize="sm">
+                  Total Issues Recorded
+                </Text>
+                <Heading>
+                  {pollingUnitsIssueAnalytics
+                    ? pollingUnitsIssueAnalytics.totalIssues
+                    : 0}
+                </Heading>
+              </VStack>
+            </Card>
+          </Skeleton>
         </VStack>
       )}
 

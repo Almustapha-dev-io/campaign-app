@@ -10,6 +10,7 @@ type TUserResponse = TPaginationResponse<TUser>;
 type TAddUserDTO = Omit<TAddUserFormValues, 'roleIds' | 'lgaId'> & {
   roleIds: number[];
   password?: string;
+  id?: number;
 };
 
 const usersApiSlice = createApi({
@@ -37,6 +38,15 @@ const usersApiSlice = createApi({
       query: (body) => ({
         url: '/registration',
         method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User', 'UserAnalytics'],
+    }),
+
+    updateUser: build.mutation<any, TAddUserDTO>({
+      query: (body) => ({
+        url: '/update-user',
+        method: 'PUT',
         body,
       }),
       invalidatesTags: ['User', 'UserAnalytics'],
@@ -76,6 +86,8 @@ export const {
   useGetUserAnalyticsQuery,
   useEnableUserMutation,
   useUpdateUserProfileImageMutation,
+  useLazyGetUserAnalyticsQuery,
+  useUpdateUserMutation,
 } = usersApiSlice;
 
 export default usersApiSlice;
