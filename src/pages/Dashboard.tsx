@@ -101,8 +101,12 @@ function Dashboard() {
     ? userDetails.roles.map((r) => r.name).includes(Roles.SuperAdmin)
     : false;
 
+  const isObserver = userDetails
+    ? userDetails.roles.map((r) => r.name).includes(Roles.ObservationRoomAgent)
+    : false;
+
   useEffect(() => {
-    if (isAdmin) {
+    if (isAdmin || isObserver) {
       if (pollingUnit) {
         getPollingUnitsAnalysis(pollingUnit);
       }
@@ -111,13 +115,13 @@ function Dashboard() {
         getPollingUnitsAnalysis(userDetails.pollingUnit.id.toString());
       }
     }
-  }, [getPollingUnitsAnalysis, isAdmin, pollingUnit, userDetails]);
+  }, [getPollingUnitsAnalysis, isAdmin, isObserver, pollingUnit, userDetails]);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (isAdmin || isObserver) {
       getLgas();
     }
-  }, [getLgas, isAdmin]);
+  }, [getLgas, isAdmin, isObserver]);
 
   useEffect(() => {
     if (lga) {
@@ -144,7 +148,7 @@ function Dashboard() {
     >
       <Heading fontSize="3xl">Dashboard</Heading>
 
-      {isAdmin && (
+      {(isAdmin || isObserver) && (
         <Stack w="full" spacing="6" direction={{ base: 'column', md: 'row' }}>
           <FormControl
             w={{ base: 'full', md: '200px' }}
@@ -215,47 +219,46 @@ function Dashboard() {
         </Stack>
       )}
 
-      {isRole(Roles.PartyAgent) ||
-        (isAdmin && (
-          <VStack w="full" spacing="4" align="flex-start">
-            <SkeletonText
-              noOfLines={1}
-              h="8px"
-              isLoaded={!pollingUnitAnalyticsLoading}
-              pb="4"
+      {(isRole(Roles.PartyAgent) || isAdmin || isObserver) && (
+        <VStack w="full" spacing="4" align="flex-start">
+          <SkeletonText
+            noOfLines={1}
+            h="8px"
+            isLoaded={!pollingUnitAnalyticsLoading}
+            pb="4"
+          >
+            <Heading fontSize="sm" color="gray.600">
+              Polling Unit Votes Analysis
+            </Heading>
+          </SkeletonText>
+          {pollingUnitAnalyticsLoading && (
+            <Center bg="white" shadow="sm" rounded="xl" w="full" h="300px">
+              <Spinner color="green.500" />
+            </Center>
+          )}
+
+          {!pollingUnitAnalyticsLoading && !!pollingUnitAnalytics && (
+            <SimpleGrid
+              w="full"
+              columns={{ base: 1, md: 2, xl: 4 }}
+              spacing="6"
             >
-              <Heading fontSize="sm" color="gray.600">
-                Polling Unit Votes Analysis
-              </Heading>
-            </SkeletonText>
-            {pollingUnitAnalyticsLoading && (
-              <Center bg="white" shadow="sm" rounded="xl" w="full" h="300px">
-                <Spinner color="green.500" />
-              </Center>
-            )}
+              {pollingUnitAnalytics.map((analytics) => (
+                <Card key={uuid()}>
+                  <VStack w="full" align="flex-start" spacing="1" px="2">
+                    <Text color="gray.500" fontSize="sm">
+                      {analytics.party} - votes
+                    </Text>
+                    <Heading>{analytics.totalVotes}</Heading>
+                  </VStack>
+                </Card>
+              ))}
+            </SimpleGrid>
+          )}
+        </VStack>
+      )}
 
-            {!pollingUnitAnalyticsLoading && !!pollingUnitAnalytics && (
-              <SimpleGrid
-                w="full"
-                columns={{ base: 1, md: 2, xl: 4 }}
-                spacing="6"
-              >
-                {pollingUnitAnalytics.map((analytics) => (
-                  <Card key={uuid()}>
-                    <VStack w="full" align="flex-start" spacing="1" px="2">
-                      <Text color="gray.500" fontSize="sm">
-                        {analytics.party} - votes
-                      </Text>
-                      <Heading>{analytics.totalVotes}</Heading>
-                    </VStack>
-                  </Card>
-                ))}
-              </SimpleGrid>
-            )}
-          </VStack>
-        ))}
-
-      {isRole(Roles.SuperAdmin) && (
+      {(isAdmin || isObserver) && (
         <VStack w="full" spacing="4" align="flex-start">
           <SkeletonText
             noOfLines={1}
