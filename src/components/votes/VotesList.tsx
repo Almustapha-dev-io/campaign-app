@@ -18,6 +18,7 @@ import {
   useLazyGetLGAsQuery,
   useLazyGetWardsQuery,
 } from 'store/reducers/states-api-slice';
+import { TPollingUnit } from 'types/polling-unit';
 import { Roles } from 'types/roles';
 
 import VotesTable from './VotesTable';
@@ -26,6 +27,11 @@ function VotesList() {
   const [lga, setLga] = useState('');
   const [ward, setWard] = useState('');
   const [pollingUnit, setPollingUnit] = useState('');
+  const [accreditedVoters, setAccreditedVoters] = useState(0);
+  const [registeredVoters, setRegisteredVoters] = useState(0);
+  const [recordedVoters, setRecordedVoters] = useState(0);
+  const [invalidVoters, setInvalidVoters] = useState(0);
+  const [unit, setUnit] = useState<TPollingUnit | null>(null);
 
   const { userDetails } = useAuth();
 
@@ -64,8 +70,9 @@ function VotesList() {
   useEffect(() => {
     if (userDetails && userDetails.pollingUnit) {
       setPollingUnit(userDetails.pollingUnit.id.toString());
+      getPollingUnits(userDetails.pollingUnit.ward.id);
     }
-  }, [userDetails]);
+  }, [getPollingUnits, userDetails]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -86,6 +93,15 @@ function VotesList() {
       getPollingUnits(Number(ward));
     }
   }, [getPollingUnits, ward]);
+
+  useEffect(() => {
+    if (pollingUnits && pollingUnit) {
+      const u = pollingUnits.find((p) => p.id.toString() === pollingUnit);
+      if (u) {
+        setUnit(u);
+      }
+    }
+  }, [isAdmin, pollingUnit, pollingUnits, userDetails]);
 
   return (
     <>
@@ -161,7 +177,23 @@ function VotesList() {
       )}
 
       {!!pollingUnit && (
-        <VotesTable pollingUnitId={pollingUnit} />
+        <>
+          <VStack w="full" align="flex-start" spacing="2">
+            <Heading fontWeight="medium" fontSize="lg">
+              Accredited Voters: {unit?.accreditedVoters}
+            </Heading>
+            <Heading fontWeight="medium" fontSize="lg">
+              Registered Voters: {unit?.registeredVoters}
+            </Heading>
+            <Heading fontWeight="medium" fontSize="lg">
+              Recorded Voters: {unit?.recordedVoters}
+            </Heading>
+            <Heading fontWeight="medium" fontSize="lg">
+              Invalid Voters: {unit?.invalidVoters}
+            </Heading>
+          </VStack>
+          <VotesTable pollingUnitId={pollingUnit} />
+        </>
         // <Tabs w="full" isLazy>
         //   <TabList>
         //     <Tab>Registered</Tab>

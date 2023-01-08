@@ -40,6 +40,7 @@ function PollingUnitData() {
   const [pollingUnit, setPollingUnit] = useState('');
   const [accreditedVoters, setAccreditedVoters] = useState(0);
   const [registeredVoter, setRegisteredVoter] = useState(0);
+  const [invalidVoter, setInvalidVoters] = useState(0);
 
   const [
     getLgas,
@@ -73,7 +74,7 @@ function PollingUnitData() {
     useUpdateUnitMutation();
 
   const submitHandler = () => {
-    if (accreditedVoters < 0 || registeredVoter < 0) {
+    if (accreditedVoters < 0 || registeredVoter < 0 || invalidVoter < 0) {
       toast('Enter valid numbers greater than 0', { type: 'error' });
       return;
     }
@@ -91,7 +92,7 @@ function PollingUnitData() {
 
     updateUnit({
       accreditedVoters,
-      invalidVoters: pu.invalidVoters,
+      invalidVoters: invalidVoter,
       name: pu.name,
       recordedVoters: pu.recordedVoters,
       wardId: pu.ward.id,
@@ -282,6 +283,21 @@ function PollingUnitData() {
               size="lg"
               value={accreditedVoters}
               onChange={(v) => setAccreditedVoters(Number(v))}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+
+          <FormControl isReadOnly={isAdmin}>
+            <FormLabel>Invalid Voters</FormLabel>
+            <NumberInput
+              size="lg"
+              value={invalidVoter}
+              onChange={(v) => setInvalidVoters(Number(v))}
             >
               <NumberInputField />
               <NumberInputStepper>

@@ -38,17 +38,7 @@ function Vote() {
       <AddVote user={userDetails} />
       <VStack w="full" py={{ base: 4, lg: 12 }} spacing="10" align="flex-start">
         <VotesAction />
-        <VStack w="full" align="flex-start" spacing="2">
-          <Heading fontWeight="medium" fontSize="lg">
-            Accredited Voters: 0
-          </Heading>
-          <Heading fontWeight="medium" fontSize="lg">
-            Recorded Voters: 0
-          </Heading>
-          <Heading fontWeight="medium" fontSize="lg">
-            Invalid Voters: 0
-          </Heading>
-        </VStack>
+
         <VotesList />
       </VStack>
     </VoteContextProvider>

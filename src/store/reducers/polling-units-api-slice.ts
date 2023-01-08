@@ -36,7 +36,7 @@ export const pollingUnitApiSlice = createApi({
 
     updateUnit: build.mutation<any, PollingUnitDTO>({
       query: (body) => ({
-        url: '/issues',
+        url: '/',
         method: 'PUT',
         body,
       }),
