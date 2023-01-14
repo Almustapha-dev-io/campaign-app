@@ -19,9 +19,11 @@ import { FiLogOut } from 'react-icons/fi';
 import { useAppDispatch } from 'store/hooks';
 import { logOut } from 'store/reducers/auth-slice';
 
-type Props = TSidebarItem & {};
+type Props = TSidebarItem & {
+  onClick?(): void;
+};
 
-function SidebarItem({ icon, label, sidebarOpen, url }: Props) {
+function SidebarItem({ icon, label, sidebarOpen, url, onClick }: Props) {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
   const showPopover = isDesktop && !sidebarOpen;
 
@@ -40,6 +42,7 @@ function SidebarItem({ icon, label, sidebarOpen, url }: Props) {
         },
       }}
       transition="all .5s"
+      onClick={onClick}
     >
       <Popover placement="right-end" trigger="hover">
         <PopoverTrigger>

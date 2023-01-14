@@ -96,7 +96,7 @@ function Voters() {
           justify={{ base: 'flex-start', md: 'space-between' }}
           align={{ base: 'flex-start', md: 'center' }}
         >
-          <Heading fontSize="3xl">Voters</Heading>
+          <Heading fontSize="3xl">Contacts</Heading>
           {isAdmin && (
             <Button
               w={{ base: 'full', md: 'auto' }}
@@ -104,7 +104,7 @@ function Voters() {
               onClick={onOpen}
               // isDisabled={isFetchingLgs || isFetchingWards}
             >
-              Upload Voters
+              Upload Contacts
             </Button>
           )}
         </Stack>

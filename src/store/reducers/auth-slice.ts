@@ -27,6 +27,15 @@ const authSlice = createSlice({
       delete state.accessToken;
       delete state.userDetails;
     },
+    setAuth(
+      state,
+      {
+        payload,
+      }: PayloadAction<Pick<TAuthState, 'accessToken' | 'userDetails'>>
+    ) {
+      state.accessToken = payload.accessToken;
+      state.userDetails = payload.userDetails;
+    },
     reset(state) {
       delete state.error;
       delete state.uploadSuccess;
@@ -79,6 +88,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { logOut, startTask, reset, setUserImage } = authSlice.actions;
+export const { logOut, startTask, reset, setUserImage, setAuth } =
+  authSlice.actions;
 
 export default authSlice.reducer;

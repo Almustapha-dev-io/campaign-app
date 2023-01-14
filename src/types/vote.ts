@@ -17,3 +17,9 @@ export type VoteDTO = {
   numberOfVotes: number;
   party: 'APC' | 'PDP' | 'OTHERS';
 };
+
+export type TOfflineVote = {
+  party: string;
+  votes: number;
+  pollingUnit: TPollingUnit;
+};

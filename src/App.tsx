@@ -1,8 +1,10 @@
 import Layout from 'containers/Layout';
+import useOnlineStatus from 'hooks/useOnlineStatus';
 import Dashboard from 'pages/Dashboard';
 import ElectionTypes from 'pages/ElectionTypes';
 import Feedback from 'pages/Feedback';
 import Login from 'pages/Login';
+import OfflineMode from 'pages/OfflineMode';
 import PollingUnitData from 'pages/PollingUnitData';
 import PollingUnitIssues from 'pages/PollingUnitIssues';
 import Profile from 'pages/Profile';
@@ -13,6 +15,8 @@ import Voters from 'pages/Voters';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 function App() {
+  const online = useOnlineStatus();
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -25,9 +29,10 @@ function App() {
         <Route path="voters" element={<Voters />} />
         <Route path="feedback" element={<Feedback />} />
         <Route path="votes" element={<Vote />} />
-        <Route path="/polling-unit-data" element={<PollingUnitData />} />
-        <Route path="/polling-unit-issues" element={<PollingUnitIssues />} />
+        <Route path="polling-unit-data" element={<PollingUnitData />} />
+        <Route path="polling-unit-issues" element={<PollingUnitIssues />} />
         <Route path="election-types" element={<ElectionTypes />} />
+        <Route path="/offline-upload" element={<OfflineMode />} />
         <Route path="" element={<Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Route>

@@ -2,7 +2,11 @@ import { TSidebarItem } from 'types/sidebar';
 import { FiUsers, FiUser, FiSliders, FiGrid } from 'react-icons/fi';
 import { BsBoxSeam } from 'react-icons/bs';
 import { FaRegAddressCard } from 'react-icons/fa';
-import { MdOutlineFeedback, MdOutlinePermMedia } from 'react-icons/md';
+import {
+  MdOutlineFeedback,
+  MdOutlinePermMedia,
+  MdWifiOff,
+} from 'react-icons/md';
 import { RiAccountPinBoxLine } from 'react-icons/ri';
 import { BiMessageSquareDetail } from 'react-icons/bi';
 import { Roles } from 'types/roles';
@@ -48,7 +52,7 @@ export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
   // },
   {
     icon: FaRegAddressCard,
-    label: 'Voters',
+    label: 'Contacts',
     sidebarOpen,
     url: '/voters',
     roles: [Roles.CallCenterAgent, Roles.SuperAdmin],
@@ -73,6 +77,13 @@ export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
     sidebarOpen,
     url: '/polling-unit-issues',
     roles: [Roles.PartyAgent, Roles.SuperAdmin, Roles.ObservationRoomAgent],
+  },
+  {
+    icon: MdWifiOff,
+    label: 'Offline Data',
+    sidebarOpen,
+    url: '/offline-upload',
+    roles: [Roles.PartyAgent],
   },
   {
     icon: BsBoxSeam,

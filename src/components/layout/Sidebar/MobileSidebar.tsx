@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { LayoutContext } from 'contexts/layout';
 import useAuth from 'hooks/useAuth';
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import uuid from 'react-uuid';
 import Logo from './Logo';
 import { sidebarItems } from './sidebar-items';
@@ -65,13 +65,17 @@ function MobileSidebar() {
           <DrawerBody>
             <VStack w="full" mt="10" spacing="4">
               {sidebarItems(sidebarOpen).map((sidebarItem) => (
-                <>
+                <Fragment key={uuid()}>
                   {userRoles.some((role) =>
                     sidebarItem.roles.includes(role)
                   ) ? (
-                    <SidebarItem key={uuid()} {...sidebarItem} />
+                    <SidebarItem
+                      key={uuid()}
+                      {...sidebarItem}
+                      onClick={toggleSidebar}
+                    />
                   ) : null}
-                </>
+                </Fragment>
               ))}
               <LogoutSidebarItem sidebarOpen={sidebarOpen} />
             </VStack>
