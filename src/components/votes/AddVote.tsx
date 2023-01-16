@@ -1,3 +1,4 @@
+import { WarningIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -20,13 +21,17 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   useBreakpointValue,
+  Center,
+  Spinner,
+  Text,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { VoteContext } from 'contexts/vote';
 import { TVoteForm, voteSchema } from 'form-schemas/vote';
-import { useContext, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { useLazyGetPoliticalPartyQuery } from 'store/reducers/political-party-api-slice';
 
 import {
   useAddVoteMutation,
@@ -55,6 +60,12 @@ function AddVote({ user }: Props) {
   });
   const { selectedVote, setSelectedVote, isOpen, onClose } =
     useContext(VoteContext);
+
+  const [getParties, { data, isFetching, isError }] =
+    useLazyGetPoliticalPartyQuery();
+  const loadParties = useCallback(() => {
+    getParties({ page: 0, size: 1_000 });
+  }, [getParties]);
 
   const [
     addVote,
@@ -101,6 +112,109 @@ function AddVote({ user }: Props) {
     name: 'numberOfVotes',
   });
 
+  let content = (
+    <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
+      <VStack w="full" pt="4" spacing="8">
+        <FormControl isReadOnly>
+          <FormLabel>LG</FormLabel>
+          <Input
+            value={
+              user.pollingUnit?.ward?.localGovernment?.name ??
+              selectedVote?.pollingUnit.ward.localGovernment.name
+            }
+          />
+        </FormControl>
+
+        <FormControl isReadOnly>
+          <FormLabel>Ward</FormLabel>
+          <Input
+            value={
+              user.pollingUnit?.ward?.name ??
+              selectedVote?.pollingUnit.ward.name
+            }
+          />
+        </FormControl>
+
+        <FormControl isReadOnly>
+          <FormLabel>Polling Unit</FormLabel>
+          <Input {...register('pollingUnitId')} />
+        </FormControl>
+
+        {/* <FormControl>
+      <FormLabel>Vote Type</FormLabel>
+      <Select>
+        <option selected hidden>
+          Select One
+        </option>
+        <option value="registed">Registered Votes</option>
+        <option value="accredited">Accredited Votes</option>
+        <option value="recorded">Recorded Votes</option>
+        <option value="invalid">Invalid Votes</option>
+      </Select>
+    </FormControl> */}
+
+        <FormControl isInvalid={!!errors.party}>
+          <FormLabel>Party</FormLabel>
+          <Select defaultValue="" {...register('party')}>
+            <option value="" hidden>
+              Select one
+            </option>
+            {!!data &&
+              data.data.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} - {p.id}
+                </option>
+              ))}
+          </Select>
+        </FormControl>
+
+        <FormControl isInvalid={!!fieldState.error}>
+          <FormLabel>Votes</FormLabel>
+          <NumberInput
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            value={field.value}
+            ref={field.ref}
+            name={field.name}
+            precision={0}
+            min={0}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
+        </FormControl>
+
+        <Button type="submit" display="none" ref={submitBtnRef} />
+      </VStack>
+    </chakra.form>
+  );
+
+  if (isFetching) {
+    content = (
+      <Center w="full" h="400px">
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!isFetching && isError) {
+    content = (
+      <Center w="full" h="400px">
+        <VStack w="full" spacing="4">
+          <VStack w="full">
+            <WarningIcon fontSize="5xl" color="red.500" />
+            <Text color="red.500">Error getting parties</Text>
+          </VStack>
+          <Button onClick={loadParties}>Retry</Button>
+        </VStack>
+      </Center>
+    );
+  }
+
   useEffect(() => {
     if (isOpen) {
       const validationData = {
@@ -113,7 +227,7 @@ function AddVote({ user }: Props) {
       if (selectedVote) {
         setValue('pollingUnitId', selectedVote.pollingUnit.name);
         setValue('numberOfVotes', selectedVote.numberOfVotes);
-        setValue('party', selectedVote.party);
+        setValue('party', selectedVote.party.id);
       }
     }
   }, [isOpen, selectedVote, setValue, user]);
@@ -148,6 +262,10 @@ function AddVote({ user }: Props) {
     }
   }, [isUpdateError, isUpdating, updateError]);
 
+  useEffect(() => {
+    loadParties();
+  }, [loadParties]);
+
   const isDesktop = useBreakpointValue({ base: false, lg: true });
 
   return (
@@ -171,89 +289,25 @@ function AddVote({ user }: Props) {
         {!isUpdating && !isAdding && <DrawerCloseButton />}
         <DrawerHeader>{selectedVote ? 'Update' : 'Add'} Votes</DrawerHeader>
 
-        <DrawerBody>
-          <chakra.form w="full" onSubmit={handleSubmit(submitHandler)}>
-            <VStack w="full" pt="4" spacing="8">
-              <FormControl isReadOnly>
-                <FormLabel>LG</FormLabel>
-                <Input value={user.pollingUnit?.ward?.localGovernment?.name} />
-              </FormControl>
-
-              <FormControl isReadOnly>
-                <FormLabel>Ward</FormLabel>
-                <Input value={user.pollingUnit?.ward?.name} />
-              </FormControl>
-
-              <FormControl isReadOnly>
-                <FormLabel>Polling Unit</FormLabel>
-                <Input {...register('pollingUnitId')} />
-              </FormControl>
-
-              {/* <FormControl>
-                <FormLabel>Vote Type</FormLabel>
-                <Select>
-                  <option selected hidden>
-                    Select One
-                  </option>
-                  <option value="registed">Registered Votes</option>
-                  <option value="accredited">Accredited Votes</option>
-                  <option value="recorded">Recorded Votes</option>
-                  <option value="invalid">Invalid Votes</option>
-                </Select>
-              </FormControl> */}
-
-              <FormControl isInvalid={!!errors.party}>
-                <FormLabel>Party</FormLabel>
-                <Select defaultValue="" {...register('party')}>
-                  <option value="" hidden>
-                    Select one
-                  </option>
-                  <option value="APC">APC</option>
-                  <option value="PDP">PDP</option>
-                  <option value="OTHERS">OTHERS</option>
-                </Select>
-              </FormControl>
-
-              <FormControl isInvalid={!!fieldState.error}>
-                <FormLabel>Votes</FormLabel>
-                <NumberInput
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  value={field.value}
-                  ref={field.ref}
-                  name={field.name}
-                  precision={0}
-                  min={0}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
-              </FormControl>
-
-              <Button type="submit" display="none" ref={submitBtnRef} />
-            </VStack>
-          </chakra.form>
-        </DrawerBody>
+        <DrawerBody>{content}</DrawerBody>
 
         <DrawerFooter>
-          {hasRoles(user, new Set([Roles.PartyAgent])) && (
-            <Button
-              mr={3}
-              isDisabled={!isValid || isAdding || isUpdating}
-              isLoading={isAdding || isUpdating}
-              onClick={() => {
-                if (submitBtnRef.current) {
-                  submitBtnRef.current.click();
-                }
-              }}
-            >
-              Save
-            </Button>
-          )}
+          {hasRoles(user, new Set([Roles.PartyAgent])) &&
+            !isFetching &&
+            !isError && (
+              <Button
+                mr={3}
+                isDisabled={!isValid || isAdding || isUpdating}
+                isLoading={isAdding || isUpdating}
+                onClick={() => {
+                  if (submitBtnRef.current) {
+                    submitBtnRef.current.click();
+                  }
+                }}
+              >
+                Save
+              </Button>
+            )}
 
           <Button variant="ghost" onClick={onClose}>
             Cancel

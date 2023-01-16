@@ -13,6 +13,7 @@ import { statesApiSlice } from './reducers/states-api-slice';
 import usersApiSlice from './reducers/users-api-slice';
 import { votersApiSlice } from './reducers/voters-api-slice';
 import { votesApiSlice } from './reducers/votes-api-slice';
+import { politcalPartyApiSlice } from './reducers/political-party-api-slice';
 
 export const configureStoreWithMiddleware = (initialState = {}) => {
   const rootPersistConfig = {
@@ -32,6 +33,7 @@ export const configureStoreWithMiddleware = (initialState = {}) => {
     [votesApiSlice.reducerPath]: votesApiSlice.reducer,
     [statesApiSlice.reducerPath]: statesApiSlice.reducer,
     [pollingUnitApiSlice.reducerPath]: pollingUnitApiSlice.reducer,
+    [politcalPartyApiSlice.reducerPath]: politcalPartyApiSlice.reducer,
   });
 
   const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
@@ -47,6 +49,7 @@ export const configureStoreWithMiddleware = (initialState = {}) => {
         votesApiSlice.middleware,
         statesApiSlice.middleware,
         pollingUnitApiSlice.middleware,
+        politcalPartyApiSlice.middleware,
       ]),
     devTools: process.env.NODE_ENV !== 'production',
     preloadedState: initialState,

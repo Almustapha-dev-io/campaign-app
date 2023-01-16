@@ -5,6 +5,7 @@ import ElectionTypes from 'pages/ElectionTypes';
 import Feedback from 'pages/Feedback';
 import Login from 'pages/Login';
 import OfflineMode from 'pages/OfflineMode';
+import PoliticalParty from 'pages/PoliticalParty';
 import PollingUnitData from 'pages/PollingUnitData';
 import PollingUnitIssues from 'pages/PollingUnitIssues';
 import Profile from 'pages/Profile';
@@ -33,6 +34,7 @@ function App() {
         <Route path="polling-unit-issues" element={<PollingUnitIssues />} />
         <Route path="election-types" element={<ElectionTypes />} />
         <Route path="/offline-upload" element={<OfflineMode />} />
+        <Route path="/political-parties" element={<PoliticalParty />} />
         <Route path="" element={<Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Route>

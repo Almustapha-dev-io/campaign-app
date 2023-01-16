@@ -70,7 +70,11 @@ function ViewVoter() {
 
       <VoterDetails
         label="Voted Party"
-        value={selectedVoterToView?.votedParty ?? 'N/A'}
+        value={
+          selectedVoterToView
+            ? `${selectedVoterToView.party.name} - ${selectedVoterToView.party.id}`
+            : 'N/A'
+        }
       />
       <VoterDetails
         label="Election Type"

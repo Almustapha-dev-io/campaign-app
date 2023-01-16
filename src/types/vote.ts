@@ -1,3 +1,4 @@
+import { TPoliticalParty } from './political-party';
 import { TPollingUnit } from './polling-unit';
 
 export type TVote = {
@@ -6,7 +7,7 @@ export type TVote = {
   dateAdded: string;
   pollingUnit: TPollingUnit;
   numberOfVotes: number;
-  party: 'APC' | 'PDP' | 'OTHERS';
+  party: TPoliticalParty;
   lastUpdatedBy: string;
   lastUpdatedOn: string;
 };
@@ -15,7 +16,7 @@ export type VoteDTO = {
   id?: number;
   pollingUnitId: string;
   numberOfVotes: number;
-  party: 'APC' | 'PDP' | 'OTHERS';
+  party: string;
 };
 
 export type TOfflineVote = {

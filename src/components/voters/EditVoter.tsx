@@ -26,11 +26,12 @@ import { format } from 'date-fns';
 import voterResponseSchema, {
   TVoterResponseForm,
 } from 'form-schemas/voter-response';
-import { useContext, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import uuid from 'react-uuid';
 import { useGetElectionTypesQuery } from 'store/reducers/election-type-api-slice';
+import { useLazyGetPoliticalPartyQuery } from 'store/reducers/political-party-api-slice';
 import { useAddVoterResponseMutation } from 'store/reducers/voters-api-slice';
 import { VotedParty, VoterStatus } from 'types/voter';
 import getServerErrorMessage from 'utilities/getServerErrorMessage';
@@ -39,6 +40,15 @@ function EditVoter() {
   const { editOpen, onEditClose, selectedVoterToEdit, setSelectedVoter } =
     useContext(VoterContext);
   const { data, isFetching, isError, refetch } = useGetElectionTypesQuery();
+  const [
+    getParties,
+    { data: parties, isFetching: isFetchingParties, isError: isPartiesError },
+  ] = useLazyGetPoliticalPartyQuery();
+
+  const loadParties = useCallback(() => {
+    getParties({ page: 0, size: 1_000 });
+  }, [getParties]);
+
   const [
     addResponse,
     {
@@ -85,9 +95,12 @@ function EditVoter() {
             <option value="" hidden>
               Select one
             </option>
-            <option value={VotedParty.PDP}>PDP</option>
-            <option value={VotedParty.APC}>APC</option>
-            <option value={VotedParty.OTHERS}>Others</option>
+            {parties &&
+              parties.data.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} - {p.id}
+                </option>
+              ))}
           </Select>
           <FormErrorMessage>{errors.votedParty?.message}</FormErrorMessage>
         </FormControl>
@@ -144,7 +157,7 @@ function EditVoter() {
     </chakra.form>
   );
 
-  if (isFetching) {
+  if (isFetching || isFetchingParties) {
     content = (
       <Center w="full" h="400px">
         <Spinner />
@@ -166,6 +179,24 @@ function EditVoter() {
     );
   }
 
+  if (!isPartiesError && isFetchingParties) {
+    content = (
+      <Center w="full" h="400px">
+        <VStack w="full" spacing="4">
+          <VStack w="full">
+            <WarningIcon fontSize="5xl" color="red.500" />
+            <Text color="red.500">Error getting parties</Text>
+          </VStack>
+          <Button onClick={loadParties}>Retry</Button>
+        </VStack>
+      </Center>
+    );
+  }
+
+  useEffect(() => {
+    loadParties();
+  }, [loadParties]);
+
   useEffect(() => {
     if (editOpen) {
       const validationData = {
@@ -175,7 +206,7 @@ function EditVoter() {
       };
 
       if (selectedVoterToEdit) {
-        setValue('votedParty', selectedVoterToEdit.votedParty);
+        setValue('votedParty', selectedVoterToEdit.party?.id ?? '');
         setValue('reasonForVoting', selectedVoterToEdit.reasonForVoting);
         setValue('status', selectedVoterToEdit.status);
         setValue('dateCalled', new Date(selectedVoterToEdit.dateCalled));

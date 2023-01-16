@@ -35,6 +35,11 @@ function VotesTable({ pollingUnitId }: Props) {
       {
         Header: 'Party',
         accessor: 'party',
+        Cell: ({ value }) => (
+          <>
+            {value.name} - {value.id}
+          </>
+        ),
       },
       {
         Header: 'Votes',

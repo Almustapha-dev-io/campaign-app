@@ -292,7 +292,7 @@ function PollingUnitData() {
 
         <VStack w={{ base: 'full', md: '500px' }} mt="12" spacing="6">
           <FormControl isReadOnly={isAdmin || isObserver}>
-            <FormLabel>Total Registered Voters</FormLabel>
+            <FormLabel>Total Registered Votes</FormLabel>
             <NumberInput
               size="lg"
               value={registeredVoter}
@@ -307,7 +307,7 @@ function PollingUnitData() {
           </FormControl>
 
           <FormControl isReadOnly={isAdmin || isObserver}>
-            <FormLabel>Total Accredited Voters</FormLabel>
+            <FormLabel>Total Accredited Votes</FormLabel>
             <NumberInput
               size="lg"
               value={accreditedVoters}
@@ -322,7 +322,7 @@ function PollingUnitData() {
           </FormControl>
 
           <FormControl isReadOnly={isAdmin || isObserver}>
-            <FormLabel>Invalid Voters</FormLabel>
+            <FormLabel>Invalid Votes</FormLabel>
             <NumberInput
               size="lg"
               value={invalidVoter}

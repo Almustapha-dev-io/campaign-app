@@ -180,16 +180,16 @@ function VotesList() {
         <>
           <VStack w="full" align="flex-start" spacing="2">
             <Heading fontWeight="medium" fontSize="lg">
-              Accredited Voters: {unit?.accreditedVoters}
+              Registered Votes: {unit?.registeredVoters}
             </Heading>
             <Heading fontWeight="medium" fontSize="lg">
-              Registered Voters: {unit?.registeredVoters}
+              Accredited Votes: {unit?.accreditedVoters}
             </Heading>
             <Heading fontWeight="medium" fontSize="lg">
-              Recorded Voters: {unit?.recordedVoters}
+              Invalid Votes: {unit?.invalidVoters}
             </Heading>
             <Heading fontWeight="medium" fontSize="lg">
-              Invalid Voters: {unit?.invalidVoters}
+              Recorded Votes: {unit?.recordedVoters}
             </Heading>
           </VStack>
           <VotesTable pollingUnitId={pollingUnit} />

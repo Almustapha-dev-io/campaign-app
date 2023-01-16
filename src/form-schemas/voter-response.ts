@@ -2,7 +2,7 @@ import { VotedParty, VoterStatus } from 'types/voter';
 import * as yup from 'yup';
 
 export type TVoterResponseForm = {
-  votedParty: VotedParty;
+  votedParty: string;
   electionTypeId: string;
   reasonForVoting: string;
   status: VoterStatus;
@@ -11,11 +11,7 @@ export type TVoterResponseForm = {
 };
 
 const voterResponseSchema = yup.object().shape({
-  votedParty: yup
-    .string()
-    .oneOf([VotedParty.APC, VotedParty.PDP, VotedParty.OTHERS])
-    .required()
-    .label('Party'),
+  votedParty: yup.string().required().label('Party'),
   electionTypeId: yup.string().required().label('Election type'),
   reasonForVoting: yup.string().required().label('Reason for voting'),
   status: yup

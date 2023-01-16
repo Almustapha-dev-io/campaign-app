@@ -4,6 +4,7 @@ import { BsBoxSeam } from 'react-icons/bs';
 import { FaRegAddressCard } from 'react-icons/fa';
 import {
   MdOutlineFeedback,
+  MdOutlineGroupWork,
   MdOutlinePermMedia,
   MdWifiOff,
 } from 'react-icons/md';
@@ -50,6 +51,13 @@ export const sidebarItems = (sidebarOpen: boolean): TSidebarItem[] => [
   //     Roles.SuperAdmin,
   //   ],
   // },
+  {
+    icon: MdOutlineGroupWork,
+    label: 'Political Parties',
+    sidebarOpen,
+    url: '/political-parties',
+    roles: [Roles.SuperAdmin],
+  },
   {
     icon: FaRegAddressCard,
     label: 'Contacts',
